@@ -1,6 +1,6 @@
-from asyncio import sleep
 import cv2
 import numpy as np
+import os
 
 def desenha_roi(frame, x, w, y, h):
     cv2.rectangle(frame,(x, y), (x+w, y+h), (255,0,0),2)
@@ -43,12 +43,19 @@ def entrou_na_area(area, x,w,y,h):
     # Filtro as maiores de cada uma
     menorX = min(xs); maiorX = max(xs)
     menorY = min(ys); maiorY = max(ys)
-    print(menorX)
-    print(maiorX)
-    print(cx)
-    sleep(100)
+    #print(menorX)
+    #print(maiorX)
+    #print(cx)
+    #print("x CSE da bbox: "+str(x)+"Largura da bbox: "+str(w)+"\n")
     # Checo se o centro da roi está na área
-    if((cx>=menorX and cx<=maiorX) and (cy>=menorY and cy<=maiorY)):
+    if((cx>=menorX and cx<=maiorX)  and not(cx>=1315 and cx<=1371)):
+    #if((cx>=menorX and cx<=maiorX)): 
         return True
 
-    return False    
+    return False   
+
+def limpa_pasta():
+    dir = './frames/frames_na_area/'
+    for arquivo in os.listdir(dir):
+        os.remove(os.path.join(dir, arquivo))
+     

@@ -12,36 +12,28 @@ trackers = {
     'boosting' : cv2.legacy.TrackerBoosting_create
 }
 
+# Limpa a pasta de frames
+funcoes.limpa_pasta()
+
 # Tracker escolhido
-tracker_key = 'kcf'
+tracker_key = 'csrt'
 # Inicializa a região de interesse como None
 roi = None
 # Inicializa a variável que será responsável pelo tracking
 tracker = trackers[tracker_key]()
 # Capruta o video com base no caminho dado
-video = cv2.VideoCapture('./videos/Aviao_de_Frente.mp4')
-
+video = cv2.VideoCapture('./videos/Aviao_de_Perfil.mp4')
+coordenadas_centro_x = []
+coordenadas_centro_y = []
 # Contador de frames lidos
 cont = 0
 
 # Controla se o ponto entrou ou não na zona de interesse
 entrou = False
 
-# REGIÃO 1
-# Coordenadas pixel 1: 968, 459
-# Coordenadas pixel 2: 1323, 500
-# Coordenadas pixel 3: 727, 519
-# Coordenadas pixel 4: 1100, 577
-
-# REGIÃO 2
-# Coordenadas pixel 1: 723, 525
-# Coordenadas pixel 2: 1094, 579
-# Coordenadas pixel 3: 364, 608
-# Coordenadas pixel 4: 772, 698
-
 # Cria as Áreas a serem desenhadas, extrair as coordenadas do promeiro frame da imagem que já é salvo
-area1 = [(968, 459),(1323, 500),(727, 519),(1100, 577)]
-area2 = [(723, 525),(1094, 579),(364, 608),(772, 698)]
+area1 = [(1439, 739),(1314,664), (942, 730), (942, 664)]
+area2 = [(942, 728), ]
 
 # Começa a rodar o vídeo
 while True:
@@ -53,14 +45,14 @@ while True:
     
     # Se leu o frame, já desenho as áreas nele
     funcoes.desenha_Area(frame, area1, (0,255,0))
-    funcoes.desenha_Area(frame, area2, (128, 0, 128))
+    #funcoes.desenha_Area(frame, area2, (128, 0, 128))
     
     # Salva o primeiro frame
     if cont==0:
         funcoes.salvaFrame(frame, "./frames/Primeiro_Frame.jpg")
     
     # Redimensiono o frame
-    frame = cv2.resize(frame,(1220,720))
+    #frame = cv2.resize(frame,(1220,720))
 
     # Checa se a região de interesse foi definida
     if roi is not None:
@@ -72,14 +64,16 @@ while True:
             # y -> cood y do canto superior direito, h -> altura da roi
             x,y,w,h = [int(c) for c in box]
             # Desenha
+            cx, cy = funcoes.calc_centro_roi(x,w,y,h)
+            coordenadas_centro_x.append(cx); coordenadas_centro_y.append(cy)
             funcoes.desenha_roi(frame, x,w,y,h)
             funcoes.desenha_centro(frame, x,w,y,h)
             # Checa se entrou em alguma área
-            for area in [area1, area2]:
+            for area in [area1]:
                 contArea = 1
                 entrou = funcoes.entrou_na_area(area, x,w,y,h) 
                 if entrou:
-                    print("Entrou na area: "+str(contArea)+"\n")
+                    funcoes.salvaFrame(frame, "./frames/frames_na_area/"+str(contArea)+"_"+str(cont)+".jpg")
                     break
                     
         # Caso não consiga atualizar
@@ -112,8 +106,6 @@ while True:
     # Atualiza o contador
     cont+=1
 
-
 video.release()
 cv2.destroyAllWindows()
-print("Frames lidos: "+str(cont))
-
+print("Frames lidos: "+str(cont)) 
