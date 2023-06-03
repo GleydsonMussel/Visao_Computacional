@@ -2,6 +2,8 @@ import cv2
 import numpy as np
 import os
 
+fatConvPxM = 0.0010612691466083
+
 def desenha_roi(frame, x, w, y, h):
     cv2.rectangle(frame,(x, y), (x+w, y+h), (255,0,0),2)
 
@@ -10,8 +12,7 @@ def calc_centro_roi(x, w, y, h):
     cy = int(y+h/2)
     return [cx, cy]
 
-def desenha_centro(frame, x, w, y, h):
-    cx, cy = calc_centro_roi(x,w,y,h)
+def desenha_centro(frame, cx, cy):
     cv2.circle(frame, (cx,cy), 5, (0,0,255),-1)
 
 def salvaFrame(frame, caminho):
@@ -30,7 +31,7 @@ def escreve_no_video(frame, texto, posicao, cor):
     # Efetivamente escreve no vídeo
     cv2.VideoWriter()
     cv2.putText(frame, texto,posicao, fonte, tamanho, cor, grossura)
-    
+
 def entrou_na_area(area, x,w,y,h):
     cx, cy = calc_centro_roi(x,w,y,h)
     # Lista de coordenadas x e lista de coordenadas y
@@ -52,10 +53,47 @@ def entrou_na_area(area, x,w,y,h):
     #if((cx>=menorX and cx<=maiorX)): 
         return True
 
-    return False   
+    return False
+   
+def get_resolucao(frame):
+    return [frame.shape[0], frame.shape[1]]
 
-def limpa_pasta():
+def salva_velocidade(velocidade, cont):
+    if cont==0:
+        with open('./log/velocidade_percorrida_em_cada_frame.txt', 'w') as arquivo:
+                arquivo.write(str(velocidade))
+                arquivo.write('\n')
+    else:
+        with open('./log/velocidade_percorrida_em_cada_frame.txt', 'a') as arquivo:
+            arquivo.write(str(velocidade))
+            arquivo.write('\n')
+
+def salva_dist_percorrida(dist, cont):
+    if cont==0:
+        with open('./log/distancia_percorrida_em_cada_frame.txt', 'w') as arquivo:
+                arquivo.write(str(dist))
+                arquivo.write('\n')
+    else:
+        with open('./log/distancia_percorrida_em_cada_frame.txt', 'a') as arquivo:
+            arquivo.write(str(dist))
+            arquivo.write('\n')
+            
+def calc_velocidades(frame, x,y,w,h, cxant, cyant, tempo0, cont):
+    cx, cy = calc_centro_roi(x,y,w,h)
+    largurara, altura = get_resolucao(frame)
+    tempo1 = cv2.getTickCount()
+    deltaT = (tempo1 - tempo0)/cv2.getTickFrequency()
+    distancia_percorrida = (cx-cxant)*fatConvPxM
+    velocidade = distancia_percorrida/deltaT
+    salva_velocidade(velocidade, cont)
+    salva_dist_percorrida(distancia_percorrida, cont)
+    
+def limpa_pastas():
+    # Limpa pasta de imagens
     dir = './frames/frames_na_area/'
     for arquivo in os.listdir(dir):
         os.remove(os.path.join(dir, arquivo))
-     
+    # Limpa pastas de logs
+    dir = './log/'
+    for arquivo in os.listdir(dir):
+        os.remove(os.path.join(dir, arquivo))

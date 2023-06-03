@@ -1,5 +1,7 @@
 import cv2
-from funcoes_auxiliares import funcoes
+import funcoes_auxiliares.funcs_draw as funcs_draw
+import funcoes_auxiliares.funcs_manip_arq as funcs_manip_arq
+import funcoes_auxiliares.funcs_velocidade as funcs_velocidade
 
 # Lista de trackers disponíveis
 trackers = {
@@ -13,7 +15,7 @@ trackers = {
 }
 
 # Limpa a pasta de frames
-funcoes.limpa_pasta()
+funcs_manip_arq.limpa_pastas()
 
 # Tracker escolhido
 tracker_key = 'csrt'
@@ -43,17 +45,10 @@ while True:
     if frame is None:
         break
     
-    # Se leu o frame, já desenho as áreas nele
-    funcoes.desenha_Area(frame, area1, (0,255,0))
-    #funcoes.desenha_Area(frame, area2, (128, 0, 128))
-    
     # Salva o primeiro frame
     if cont==0:
-        funcoes.salvaFrame(frame, "./frames/Primeiro_Frame.jpg")
+       funcs_manip_arq.salvaFrame(frame, "./frames/Primeiro_Frame.jpg")
     
-    # Redimensiono o frame
-    #frame = cv2.resize(frame,(1220,720))
-
     # Checa se a região de interesse foi definida
     if roi is not None:
         # Atualiza o frame a ser pego pelo tracker
@@ -63,27 +58,24 @@ while True:
             # x -> cood x do canto superior direito, w -> largura da roi
             # y -> cood y do canto superior direito, h -> altura da roi
             x,y,w,h = [int(c) for c in box]
-            # Desenha
-            cx, cy = funcoes.calc_centro_roi(x,w,y,h)
+            # Calcula velocidade
+            if cont>1:
+                funcs_velocidade.calc_velocidades(frame, x,y,w,h, cx, cy, tempo0, cont)
+            
+            cx, cy = funcs_draw.calc_centro_roi(x,w,y,h)
+            tempo0 = cv2.getTickCount()
             coordenadas_centro_x.append(cx); coordenadas_centro_y.append(cy)
-            funcoes.desenha_roi(frame, x,w,y,h)
-            funcoes.desenha_centro(frame, x,w,y,h)
-            # Checa se entrou em alguma área
-            for area in [area1]:
-                contArea = 1
-                entrou = funcoes.entrou_na_area(area, x,w,y,h) 
-                if entrou:
-                    funcoes.salvaFrame(frame, "./frames/frames_na_area/"+str(contArea)+"_"+str(cont)+".jpg")
-                    break
-                    
+            funcs_draw.desenha_roi(frame, x,w,y,h)
+            funcs_draw.desenha_centro(frame, cx, cy)
+                 
         # Caso não consiga atualizar
         else:
-            funcoes.escreve_no_video(frame, "PERDEU DE VISTA", (0,50), (0,0,255))
+            funcs_draw.escreve_no_video(frame, "PERDEU DE VISTA", (0,50), (0,0,255))
             roi = None
             tracker = trackers[tracker_key]()
     
     # Escreve o fps na tela
-    funcoes.escreve_no_video(frame, "Fps: "+str(round(video.get(cv2.CAP_PROP_FPS))),(0,25), (255,0,0))
+    funcs_draw.escreve_no_video(frame, "Fps: "+str(round(video.get(cv2.CAP_PROP_FPS))),(0,25), (255,0,0))
     
     # Mostra a janela com o vídeo executando 
     cv2.imshow('Rastreando',frame)
@@ -91,14 +83,20 @@ while True:
     # Fica no aguardo do usuáqrio digitar algo
     k = cv2.waitKey(30)
     
+    # Garanto que a roi é sempre selecionada logo no primeiro frame
+    if cont==0:
+        k = 's'
+    
     # Digita-se s para pausar o video e se selecionar a região de interesse, roi
-    if k == ord('s'):
+    if k == ord('s') or k=='s':
         # Chama a função para permitir que a roi seja selecionada
         roi = cv2.selectROI('Rastreando',frame)
         # Inicializa o tracker no frame no qual se selecionou a roi
         tracker.init(frame,roi)
         # Salvo o frame no qual selecionei a roi
-        funcoes.salvaFrame(frame, "./frames/Frame_da_Roi.jpg")
+        funcs_manip_arq.salvaFrame(frame, "./frames/Frame_da_Roi.jpg")
+        # Reseto o k
+        k="g"
     # Fecha o vídeo
     elif k == ord('q'):
         break
