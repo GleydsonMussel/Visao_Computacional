@@ -2,6 +2,7 @@ import cv2
 import funcoes_auxiliares.funcs_draw as funcs_draw
 import funcoes_auxiliares.funcs_manip_arq as funcs_manip_arq
 import funcoes_auxiliares.funcs_velocidade as funcs_velocidade
+import funcoes_auxiliares.plot_graficos as plot_graficos
 
 # Lista de trackers disponíveis
 trackers = {
@@ -60,14 +61,12 @@ while True:
             x,y,w,h = [int(c) for c in box]
             # Calcula velocidade
             if cont>1:
-                funcs_velocidade.calc_velocidades(frame, x,y,w,h, cx, cy, tempo0, cont)
-            
+                funcs_velocidade.calc_velocidades(frame, x,y,w,h, cx, cy, cont, video.get(cv2.CAP_PROP_FPS))
+            # Atualiza os centros
             cx, cy = funcs_draw.calc_centro_roi(x,w,y,h)
-            tempo0 = cv2.getTickCount()
             coordenadas_centro_x.append(cx); coordenadas_centro_y.append(cy)
             funcs_draw.desenha_roi(frame, x,w,y,h)
             funcs_draw.desenha_centro(frame, cx, cy)
-                 
         # Caso não consiga atualizar
         else:
             funcs_draw.escreve_no_video(frame, "PERDEU DE VISTA", (0,50), (0,0,255))
@@ -103,7 +102,8 @@ while True:
     
     # Atualiza o contador
     cont+=1
-
-video.release()
-cv2.destroyAllWindows()
-print("Frames lidos: "+str(cont)) 
+    
+plot_graficos.plot_grafico("./log/tempo_decorrido.txt", "./log/velocidade_percorrida_em_cada_frame.txt", "Velocidade x Tempo")
+#video.release()
+#cv2.destroyAllWindows()
+#print("Frames lidos: "+str(cont)) 
