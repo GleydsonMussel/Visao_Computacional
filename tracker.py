@@ -104,6 +104,6 @@ while True:
     cont+=1
     
 plot_graficos.plot_grafico("./log/tempo_decorrido.txt", "./log/velocidade_percorrida_em_cada_frame.txt", "Velocidade x Tempo")
-#video.release()
-#cv2.destroyAllWindows()
-#print("Frames lidos: "+str(cont)) 
+video.release()
+cv2.destroyAllWindows()
+print("Frames lidos: "+str(cont)) 
