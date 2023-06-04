@@ -17,7 +17,6 @@ trackers = {
 
 # Limpa a pasta de frames
 funcs_manip_arq.limpa_pastas()
-
 # Tracker escolhido
 tracker_key = 'csrt'
 # Inicializa a região de interesse como None
@@ -26,17 +25,8 @@ roi = None
 tracker = trackers[tracker_key]()
 # Capruta o video com base no caminho dado
 video = cv2.VideoCapture('./videos/Aviao_de_Perfil.mp4')
-coordenadas_centro_x = []
-coordenadas_centro_y = []
 # Contador de frames lidos
 cont = 0
-
-# Controla se o ponto entrou ou não na zona de interesse
-entrou = False
-
-# Cria as Áreas a serem desenhadas, extrair as coordenadas do promeiro frame da imagem que já é salvo
-area1 = [(1439, 739),(1314,664), (942, 730), (942, 664)]
-area2 = [(942, 728), ]
 
 # Começa a rodar o vídeo
 while True:
@@ -59,12 +49,10 @@ while True:
             # x -> cood x do canto superior direito, w -> largura da roi
             # y -> cood y do canto superior direito, h -> altura da roi
             x,y,w,h = [int(c) for c in box]
-            # Calcula velocidade
             if cont>1:
-                funcs_velocidade.calc_velocidades(frame, x,y,w,h, cx, cy, cont, video.get(cv2.CAP_PROP_FPS))
+                funcs_velocidade.calc_velocidades(x,y,w,h, cx, cy, cont, video.get(cv2.CAP_PROP_FPS))
             # Atualiza os centros
             cx, cy = funcs_draw.calc_centro_roi(x,w,y,h)
-            coordenadas_centro_x.append(cx); coordenadas_centro_y.append(cy)
             funcs_draw.desenha_roi(frame, x,w,y,h)
             funcs_draw.desenha_centro(frame, cx, cy)
         # Caso não consiga atualizar
@@ -103,7 +91,13 @@ while True:
     # Atualiza o contador
     cont+=1
     
-plot_graficos.plot_grafico("./log/tempo_decorrido.txt", "./log/velocidade_percorrida_em_cada_frame.txt", "Velocidade x Tempo")
-video.release()
-cv2.destroyAllWindows()
-print("Frames lidos: "+str(cont)) 
+# Encerra vídeo e fecha janelas
+video.release();cv2.destroyAllWindows()    
+# PLOTS GRÁFICOS
+plot_graficos.plot_grafico("./logs/tempo_decorrido.txt", "./logs/velocidade_percorrida_em_cada_frame.txt", "Velocidade x Tempo", "Tempo (s)", "Velocidade (m/s)", [0,12], [0,1])
+plot_graficos.plot_grafico("./logs/tempo_decorrido.txt", "./logs/distancia_percorrida_x_em_cada_frame.txt", "Distancia x Tempo", "Tempo (s)", "Distancia (m)")
+plot_graficos.plot_grafico("./logs/tempo_decorrido.txt", "./logs/distancia_percorrida_y_em_cada_frame.txt", "Altura x Tempo", "Tempo (s)", "Altura (m)")
+# Output no terminal
+print("Frames Lidos: "+str(cont))
+print("Salvando Graficos...")
+ 

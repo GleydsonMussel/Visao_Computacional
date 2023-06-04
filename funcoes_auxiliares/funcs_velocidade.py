@@ -1,20 +1,25 @@
-import cv2
 import funcoes_auxiliares.funcs_draw as funcs_draw
 import funcoes_auxiliares.funcs_manip_arq as funcs_manip_arq
 
-fatConvPxM = 0.0010612691466083
+# Constantes
+fatConvPxM = 0.0010612691466083; altura_mesa = 0.9
 
-def get_resolucao(frame):
-    return [frame.shape[1], frame.shape[0]]
+def calc_velocidades(x,y,w,h, cxant, cyant,cont, fps):
+    
+    # Recalculando centro
+    cx, cy = funcs_draw.calc_centro_roi(x,w,y,h)
 
-def calc_velocidades(frame, x,y,w,h, cxant, cyant, tempo0, cont):
-    cx, cy = funcs_draw.calc_centro_roi(x,y,w,h)
-    largura, altura = get_resolucao(frame)
-    print("Largura: "+str(largura)+" Altura: "+str(altura)+"\n")
-    tempo1 = cv2.getTickCount()
-    deltaT = (tempo1 - tempo0)/cv2.getTickFrequency()
-    distancia_percorrida = (cx-cxant)*fatConvPxM
-    velocidade = distancia_percorrida/deltaT
-    funcs_manip_arq.salva_velocidade(velocidade, cont)
-    funcs_manip_arq.salva_dist_percorrida(distancia_percorrida, cont)
+    # Cálculos
+    deltaT = 1/fps
+    distancia_percorrida_x = (cx-cxant)*fatConvPxM
+    distancia_percorrida_y = (cy-cyant)*fatConvPxM + altura_mesa
+    velocidade = distancia_percorrida_x/deltaT
+    
+    # Salvando dados
+    funcs_manip_arq.salva_dado(velocidade, cont, "./logs/velocidade_percorrida_em_cada_frame.txt")
+    funcs_manip_arq.salva_dado(distancia_percorrida_x, cont, "./logs/distancia_percorrida_x_em_cada_frame.txt")
+    funcs_manip_arq.salva_dado(distancia_percorrida_y, cont, "./logs/distancia_percorrida_y_em_cada_frame.txt")
+    funcs_manip_arq.salva_dado(deltaT*cont, cont, "./logs/tempo_decorrido.txt")
+    funcs_manip_arq.salva_dado(cxant, cont, "./logs/poscoes_x_centro_antigas.txt")
+    funcs_manip_arq.salva_dado(cx, cont, "./logs/poscoes_x_centro_atuais.txt")
 
