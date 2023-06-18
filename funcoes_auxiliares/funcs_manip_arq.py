@@ -16,10 +16,16 @@ def salva_dado(dado, cont, caminho):
     
 def limpa_pastas():
     # Limpa pasta de imagens
-    dir = './frames/frames_na_area/'
+    dir = './frames'
     for arquivo in os.listdir(dir):
         os.remove(os.path.join(dir, arquivo))
     # Limpa pastas de logs
     dir = './logs/'
+    for arquivo in os.listdir(dir):
+        os.remove(os.path.join(dir, arquivo))
+
+def limpa_calibracao():
+    # Limpa diretório de imagens da calibração
+    dir = './images/'
     for arquivo in os.listdir(dir):
         os.remove(os.path.join(dir, arquivo))

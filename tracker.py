@@ -1,8 +1,10 @@
 import cv2
+import numpy as np
 import funcoes_auxiliares.funcs_draw as funcs_draw
 import funcoes_auxiliares.funcs_manip_arq as funcs_manip_arq
 import funcoes_auxiliares.funcs_velocidade as funcs_velocidade
 import funcoes_auxiliares.plot_graficos as plot_graficos
+
 
 # Lista de trackers disponíveis
 trackers = {
@@ -27,7 +29,10 @@ tracker = trackers[tracker_key]()
 video = cv2.VideoCapture('./videos/Aviao_de_Perfil.mp4')
 # Contador de frames lidos
 cont = 0
-
+# Carrego as variáveis da camera
+mtx = np.load('./coeficientes/celular_Gleydson/mtx.npy')
+newcameramtx = np.load('./coeficientes/celular_Gleydson/newcameramtx.npy')
+dist = np.load('./coeficientes/celular_Gleydson/dist.npy') 
 # Começa a rodar o vídeo
 while True:
     # Captura o grame atual
@@ -35,7 +40,9 @@ while True:
     # Checa se o frame atual não foi pego, se não foi, aborta o processamento
     if frame is None:
         break
-    
+    cv2.imwrite('./frames/frameCRU'+str(cont)+'.png', frame)
+    frame = cv2.undistort(frame, mtx, dist, None, newcameramtx)
+    cv2.imwrite('./frames/frameCALIB'+str(cont)+'.png', frame)
     # Salva o primeiro frame
     if cont==0:
        funcs_manip_arq.salvaFrame(frame, "./frames/Primeiro_Frame.jpg")
@@ -97,6 +104,9 @@ video.release();cv2.destroyAllWindows()
 plot_graficos.plot_grafico("./logs/tempo_decorrido.txt", "./logs/velocidade_percorrida_em_cada_frame.txt", "Velocidade x Tempo", "Tempo (s)", "Velocidade (m/s)", [0,12], [0,1])
 plot_graficos.plot_grafico("./logs/tempo_decorrido.txt", "./logs/distancia_percorrida_x_em_cada_frame.txt", "Distancia x Tempo", "Tempo (s)", "Distancia (m)")
 plot_graficos.plot_grafico("./logs/tempo_decorrido.txt", "./logs/distancia_percorrida_y_em_cada_frame.txt", "Altura x Tempo", "Tempo (s)", "Altura (m)")
+plot_graficos.plot_polinomio("./logs/tempo_decorrido.txt", "./logs/velocidade_percorrida_em_cada_frame.txt", "Velocidade x Tempo", "Tempo (s)", "Velocidade (m/s)", 0, 14)
+plot_graficos.plot_polinomio("./logs/tempo_decorrido.txt", "./logs/distancia_percorrida_x_em_cada_frame.txt", "Distancia x Tempo", "Tempo (s)", "Distancia (m)", 0, 14)
+plot_graficos.plot_polinomio("./logs/tempo_decorrido.txt", "./logs/distancia_percorrida_y_em_cada_frame.txt", "Altura x Tempo", "Tempo (s)", "Altura (m)", 0, 14)
 # Output no terminal
 print("Frames Lidos: "+str(cont))
 print("Salvando Graficos...")

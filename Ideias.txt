@@ -1,0 +1,3 @@
+Salvar os dados printados no terminal sobre a câmera em um log txt
+
+Fazer polyfit e polyval dos valores de distâncias e velocidades

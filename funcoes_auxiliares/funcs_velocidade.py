@@ -2,7 +2,7 @@ import funcoes_auxiliares.funcs_draw as funcs_draw
 import funcoes_auxiliares.funcs_manip_arq as funcs_manip_arq
 
 # Constantes
-fatConvPxM = 0.0010612691466083; altura_mesa = 0.9
+fatConvPxM = 0.00101750547; altura_mesa = 0.9
 
 def calc_velocidades(x,y,w,h, cxant, cyant,cont, fps):
     
