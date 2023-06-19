@@ -4,7 +4,7 @@ import funcoes_auxiliares.funcs_draw as funcs_draw
 import funcoes_auxiliares.funcs_manip_arq as funcs_manip_arq
 import funcoes_auxiliares.funcs_velocidade as funcs_velocidade
 import funcoes_auxiliares.plot_graficos as plot_graficos
-
+import funcs_aux_calib.load_coeficientes as load
 
 # Lista de trackers disponíveis
 trackers = {
@@ -29,10 +29,12 @@ tracker = trackers[tracker_key]()
 video = cv2.VideoCapture('./videos/Aviao_de_Perfil.mp4')
 # Contador de frames lidos
 cont = 0
-# Carrego as variáveis da camera
-mtx = np.load('./coeficientes/celular_Gleydson/mtx.npy')
-newcameramtx = np.load('./coeficientes/celular_Gleydson/newcameramtx.npy')
-dist = np.load('./coeficientes/celular_Gleydson/dist.npy') 
+# Carregar os coeficientes do arquivo
+data = np.load('./coeficientes/celular_Gleydson/coeficientes.npz')
+# Acessar os coeficientes salvos
+dist = data['distortion']
+mtx = data['camera']
+newcameramtx = data['new_camera']
 # Começa a rodar o vídeo
 while True:
     # Captura o grame atual
@@ -40,8 +42,15 @@ while True:
     # Checa se o frame atual não foi pego, se não foi, aborta o processamento
     if frame is None:
         break
+    scale_percent = 50# percent of original size
+    width = int(frame.shape[1] * scale_percent / 100)
+    height = int(frame.shape[0] * scale_percent / 100)
+    dim = (width, height)
+    
+    # resize image
+    #frame = cv2.resize(frame, dim, interpolation = cv2.INTER_AREA)
     cv2.imwrite('./frames/frameCRU'+str(cont)+'.png', frame)
-    frame = cv2.undistort(frame, mtx, dist, None, newcameramtx)
+    frame = cv2.undistort(gray, mtx, dist, None, newcameramtx)
     cv2.imwrite('./frames/frameCALIB'+str(cont)+'.png', frame)
     # Salva o primeiro frame
     if cont==0:
@@ -70,17 +79,15 @@ while True:
     
     # Escreve o fps na tela
     funcs_draw.escreve_no_video(frame, "Fps: "+str(round(video.get(cv2.CAP_PROP_FPS))),(0,25), (255,0,0))
-    
     # Mostra a janela com o vídeo executando 
-    cv2.imshow('Rastreando',frame)
-    
+    cv2.imshow('Rastreando',frame)   
+
     # Fica no aguardo do usuáqrio digitar algo
     k = cv2.waitKey(30)
-    
+
     # Garanto que a roi é sempre selecionada logo no primeiro frame
     if cont==0:
-        k = 's'
-    
+        k = 's'    
     # Digita-se s para pausar o video e se selecionar a região de interesse, roi
     if k == ord('s') or k=='s':
         # Chama a função para permitir que a roi seja selecionada

@@ -26,6 +26,6 @@ def limpa_pastas():
 
 def limpa_calibracao():
     # Limpa diretório de imagens da calibração
-    dir = './images/'
+    dir = './images/res_calibracao/'
     for arquivo in os.listdir(dir):
         os.remove(os.path.join(dir, arquivo))
