@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
+
 def get_dados(caminho_dado):
     dado = []
     with open(caminho_dado, 'r') as arquivo:
@@ -19,7 +20,10 @@ def plot_grafico(caminho_dado1, caminho_dado2, titulo, lgdX, lgdY, limX=None, li
     plt.savefig("./graficos/"+titulo+".png")
     plt.close()
     if titulo=="Distancia x Tempo":
-        print("Distancia Percorrida: "+str(sum(dado2)))
+        dados2 = dado2.reverse()
+        print("Distancia Percorrida (Diagonalmente na imagem)"+str(dado2[0]))
+    if titulo=="Distancia_X x Tempo":
+        print("Distancia Percorrida: (Somente x)"+str(sum(dado2)))
 
 def plot_polinomio(caminho_dado1, caminho_dado2, titulo, lgdX, lgdY,  lim_inf_dados1, lim_sup_dados1, limX=None, limY=None, ):
     dados1 = get_dados(caminho_dado1); dados2 = get_dados(caminho_dado2)

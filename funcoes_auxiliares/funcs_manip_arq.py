@@ -1,8 +1,8 @@
 import cv2
 import os
 
-def salvaFrame(frame, caminho):
-    cv2.imwrite(caminho , frame)
+def salvaFrame(caminho, frame):
+    cv2.imwrite(caminho, frame)
     
 def salva_dado(dado, cont, caminho):
     if cont==0:
@@ -27,5 +27,8 @@ def limpa_pastas():
 def limpa_calibracao():
     # Limpa diretório de imagens da calibração
     dir = './images/res_calibracao/'
+    for arquivo in os.listdir(dir):
+        os.remove(os.path.join(dir, arquivo))
+    dir = './images/storage/'
     for arquivo in os.listdir(dir):
         os.remove(os.path.join(dir, arquivo))
