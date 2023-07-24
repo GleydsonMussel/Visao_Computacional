@@ -14,21 +14,26 @@ def salva_dado(dado, cont, caminho):
             arquivo.write(str(dado))
             arquivo.write('\n')
     
-def limpa_pastas():
-    # Limpa pasta de imagens
+def limpa_frames_logs():
+
     dir = './frames'
     for arquivo in os.listdir(dir):
         os.remove(os.path.join(dir, arquivo))
-    # Limpa pastas de logs
+
     dir = './logs/'
     for arquivo in os.listdir(dir):
         os.remove(os.path.join(dir, arquivo))
 
 def limpa_calibracao():
-    # Limpa diretório de imagens da calibração
+
     dir = './images/res_calibracao/'
     for arquivo in os.listdir(dir):
         os.remove(os.path.join(dir, arquivo))
     dir = './images/storage/'
+    for arquivo in os.listdir(dir):
+        os.remove(os.path.join(dir, arquivo))
+        
+def limpa_res_teste_calibracao():
+    dir = "./images/res_calib_video_teste/"
     for arquivo in os.listdir(dir):
         os.remove(os.path.join(dir, arquivo))

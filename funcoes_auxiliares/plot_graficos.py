@@ -19,6 +19,7 @@ def plot_grafico(caminho_dado1, caminho_dado2, titulo, lgdX, lgdY, limX=None, li
         plt.axes([limX[0], limX[1], limY[0], limY[1]]) 
     plt.savefig("./graficos/"+titulo+".png")
     plt.close()
+
     if titulo=="Distancia x Tempo":
         dados2 = dado2.reverse()
         print("Distancia Percorrida (Diagonalmente na imagem)"+str(dado2[0]))
