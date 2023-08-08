@@ -1,0 +1,13 @@
+Sai da mesa no frame: 42
+
+Atinge a altura mais baixa que o rastreador consegui pegar no frame: 48
+
+Velocidade de saída da mesa: 7.6188335721421305 m/s 
+
+Altura Caída: 35.55 cm
+
+Velocidade na altura mínima que o rastreador consegui pegar: aproximadamente 8.5574 m/s (média das velocidades anterior ao frame 48, pois exatamente nele o rasttrwador começa a deslocar e ir para a EH)
+
+Tempo de saída da mesa: 1.4333333333333333 s
+
+Fator de Conversão: 0.0045
