@@ -3,7 +3,6 @@ import numpy as np
 import funcoes_auxiliares.funcs_draw as funcs_draw
 import funcoes_auxiliares.funcs_manip_arq as funcs_manip_arq
 import funcoes_auxiliares.funcs_velocidade as funcs_velocidade
-import funcoes_auxiliares.redimensiona as redimensiona
 import funcoes_auxiliares.cria_pastas as cria_pastas
 
 # Grante que as pastas necessárias existam
