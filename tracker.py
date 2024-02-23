@@ -3,8 +3,11 @@ import numpy as np
 import funcoes_auxiliares.funcs_draw as funcs_draw
 import funcoes_auxiliares.funcs_manip_arq as funcs_manip_arq
 import funcoes_auxiliares.funcs_velocidade as funcs_velocidade
-import funcoes_auxiliares.plot_graficos as plot_graficos
 import funcoes_auxiliares.redimensiona as redimensiona
+import funcoes_auxiliares.cria_pastas as cria_pastas
+
+# Grante que as pastas necessárias existam
+cria_pastas.arruma_ambiente()
 
 # Lista de trackers disponíveis
 trackers = {
@@ -84,10 +87,8 @@ while True:
     if k == ord('s') or contFrame==0:
         
         # Inicializando selecionando com o mouse
-        #roi = cv2.selectROI('Rastreando',frame)
-        
-        # Inicializando por coordenada
-        roi = (1778, 507, 133, 50)
+        roi = cv2.selectROI('Rastreando',frame)
+
         # Inicializa o tracker no frame no qual se selecionou a roi
         tracker.init(frame,roi)
         funcs_manip_arq.salva_dado(roi, 1, './rois/roi'+str(nome_video)+'.txt')
