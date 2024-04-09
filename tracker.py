@@ -26,7 +26,7 @@ funcs_manip_arq.limpa_frames_logs()
 roi = None
 
 # Pegando vídeo e preparando output do mesmo
-nome_video = 'Voo6Editado'
+nome_video = 'Voo7Editado'
 extencao = '.mp4'
 video = cv2.VideoCapture('./videos/Voos/'+nome_video+extencao)
 alturaVideo = int(video.get(cv2.CAP_PROP_FRAME_HEIGHT)); larguraVideo = int(video.get(cv2.CAP_PROP_FRAME_WIDTH))
@@ -35,7 +35,7 @@ videoSaida = cv2.VideoWriter('./videos/Outputs/'+nome_video+'_output'+extencao, 
 
 contFrame = 0
 
-dadosCalib = np.load('./coeficientes/celular_Ronaldo/coeficientes.npz')
+dadosCalib = np.load('./coeficientes/celular_Gleydson/coeficientes.npz')
 
 dist = dadosCalib['distortion']; mtx = dadosCalib['camera']; newcameramtx = dadosCalib['new_camera']; 
 distpercorridaPassada = 0; alturapercorridaPassada = 0
@@ -87,7 +87,9 @@ while True:
         
         # Inicializando selecionando com o mouse
         roi = cv2.selectROI('Rastreando',frame)
-
+        
+        # Inicializando por coordenada
+        #roi = (1778, 507, 133, 50)
         # Inicializa o tracker no frame no qual se selecionou a roi
         tracker.init(frame,roi)
         funcs_manip_arq.salva_dado(roi, 1, './rois/roi'+str(nome_video)+'.txt')

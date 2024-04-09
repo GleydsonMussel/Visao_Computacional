@@ -7,7 +7,7 @@ import funcoes_auxiliares.plot_graficos as plot_graficos
 #fatConvPxM = 0.0050
 
 # Atrito 1
-fatConvPxM = 0.0016706827309237
+fatConvPxM = 0.0065
 
 def calc_velocidades(x,y,w,h, cxant, cyant,cont, fps, distanciaPercorridaPassada, alturaPercorridaPassada, h0):
     

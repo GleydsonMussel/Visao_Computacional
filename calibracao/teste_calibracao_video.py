@@ -2,12 +2,14 @@ import cv2
 import numpy as np
 import sys
 import os
+
+from funcoes_auxiliares import funcs_manip_arq
+from funcoes_auxiliares import redimensiona
+
 # Obtenha o caminho absoluto para a pasta 'funcoes_auxiliares'
 caminho_funcoes_auxiliares = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'funcoes_auxiliares'))
 # Adicione o caminho ao diretório de busca do Python
 sys.path.append(caminho_funcoes_auxiliares)
-import funcs_manip_arq
-import redimensiona
 
 funcs_manip_arq.limpa_res_teste_calibracao()
 

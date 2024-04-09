@@ -3,13 +3,14 @@ import numpy as np
 import glob
 import sys
 import os
+from funcoes_auxiliares import teste_calibrador
+from funcoes_auxiliares import redimensiona
+
 # Obtenha o caminho absoluto para a pasta 'funcoes_auxiliares'
 caminho_funcoes_auxiliares = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'funcoes_auxiliares'))
 # Adicione o caminho ao diretório de busca do Python
 sys.path.append(caminho_funcoes_auxiliares)
-import teste_calibrador
-import redimensiona
-    
+
 CHECKERBOARD = (7, 11)
 
 # Critério de parada
