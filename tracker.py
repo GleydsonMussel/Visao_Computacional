@@ -1,12 +1,29 @@
 import cv2
 import numpy as np
-import funcoes_auxiliares.funcs_draw as funcs_draw
-import funcoes_auxiliares.funcs_manip_arq as funcs_manip_arq
-import funcoes_auxiliares.funcs_velocidade as funcs_velocidade
-import funcoes_auxiliares.cria_pastas as cria_pastas
+from Classes.CameraData import CameraData
+import Methods.Drawer as Drawer
+import Methods.Manipulate_Files as Manip
+import Methods.Calculator as Calculator
+import Methods.Graphics as Plot
+import Methods.Calibration as Calibration
 
-# Grante que as pastas necessárias existam
-cria_pastas.arruma_ambiente()
+# Garante que as pastas necessárias existem
+Manip.create_folders()
+# Limpa tudo que for necessário para realizar o processamento
+Manip.clean_tracker_processing()
+
+#-----------------------------PREENCHER-----------------------------------
+
+# SETAR NOME VÍDEO
+nome_video = 'Voo7Editado'; extencao = '.mp4'
+
+# SETAR O VALOR DO FATOR DE CONVERSÃO
+fatConvPxM = 0.078
+
+# Se desejar aplicar a calibração de câmera, True, se não, False
+aplicaCalib = True
+
+#--------------------------------------------------------------------------
 
 # Lista de trackers disponíveis
 trackers = {
@@ -21,40 +38,32 @@ trackers = {
 tracker_key = 'csrt'
 tracker = trackers[tracker_key]()
 
-funcs_manip_arq.limpa_frames_logs()
-
-roi = None
-
-# Pegando vídeo e preparando output do mesmo
-nome_video = 'Voo7Editado'
-extencao = '.mp4'
 video = cv2.VideoCapture('./videos/Voos/'+nome_video+extencao)
-alturaVideo = int(video.get(cv2.CAP_PROP_FRAME_HEIGHT)); larguraVideo = int(video.get(cv2.CAP_PROP_FRAME_WIDTH))
-fps = video.get(cv2.CAP_PROP_FPS)
-videoSaida = cv2.VideoWriter('./videos/Outputs/'+nome_video+'_output'+extencao, cv2.VideoWriter_fourcc('m', 'p', '4', 'v'), fps, (larguraVideo, alturaVideo))
+alturaVideo = int(video.get(cv2.CAP_PROP_FRAME_HEIGHT)); 
+larguraVideo = int(video.get(cv2.CAP_PROP_FRAME_WIDTH))
+videoSaida = cv2.VideoWriter('./videos/Outputs/'+nome_video+'_output'+extencao, cv2.VideoWriter_fourcc('m', 'p', '4', 'v'), video.get(cv2.CAP_PROP_FPS), (larguraVideo, alturaVideo))
 
+dados_camera = CameraData('./Cameras_Data/celular_Gleydson/coeficientes.npz')
+ 
+distancia_acumulada_X = 0; altura_acumulada = 0
 contFrame = 0
+roi = None                              
 
-dadosCalib = np.load('./coeficientes/celular_Gleydson/coeficientes.npz')
-
-dist = dadosCalib['distortion']; mtx = dadosCalib['camera']; newcameramtx = dadosCalib['new_camera']; 
-distpercorridaPassada = 0; alturapercorridaPassada = 0
-
-aplicaCalib = True; redimensionaJanela = False                              
-
+#-----------------Começo Processamento------------------
 while True:
-    
+    # Tenta coletar o frame a ser processado
     frame = video.read()[1]
     
     if frame is None:
         break
+    Manip.save_data(frame, './frames/frameCRU_'+str(contFrame)+'.png')
     
-    funcs_manip_arq.salvaFrame('./frames/frameCRU_'+str(contFrame)+'.png', frame)
-           
+    # Caso se deseje aplicar a calibração
     if aplicaCalib:
-        frame = cv2.undistort(frame, mtx, dist, None, newcameramtx)
-        funcs_manip_arq.salvaFrame('./frames/frameCALIB_'+str(contFrame)+'.png', frame)
-        
+        frame = Calibration.aply_calib(frame, dados_camera)
+        Manip.save_data(frame, './frames/frameCALIB_'+str(contFrame)+'.png')
+    
+    # Se há uma região de interesse para o rastreador rastrear
     if roi is not None:
         
         localizou, caixaInteresse = tracker.update(frame)
@@ -63,21 +72,17 @@ while True:
             # x -> cood x do canto superior direito, w -> largura da roi
             # y -> cood y do canto superior direito, h -> altura da roi
             x,y,w,h = [int(c) for c in caixaInteresse]
-            if contFrame == 1:
-                h0 = -999999999999
             if contFrame>1:
-                #distpercorridaPassada, alturapercorridaPassada, h0 = funcs_velocidade.calc_velocidades_diagonalmente(x,y,w,h, cx, cy, contFrame, video.get(cv2.CAP_PROP_FPS), distpercorridaPassada, alturapercorridaPassada, h0)
-                distpercorridaPassada, alturapercorridaPassada, h0 = funcs_velocidade.calc_velocidades(x,y,w,h, cx, cy, contFrame, video.get(cv2.CAP_PROP_FPS), distpercorridaPassada, alturapercorridaPassada, h0)
+                distancia_acumulada_X, altura_acumulada = Calculator.calc_speed(x, y, w, h, cx, cy, contFrame, video.get(cv2.CAP_PROP_FPS), distancia_acumulada_X, altura_acumulada, fatConvPxM)
             
-            cx, cy = funcs_draw.calc_centro_roi(x,w,y,h)
-            funcs_draw.desenha_roi(frame, x,w,y,h)
-            funcs_draw.desenha_centro(frame, cx, cy)
-        
+            cx, cy = Calculator.get_center_roi(x,w,y,h)
+            Drawer.draw_roi(frame, x, w, y, h, cx, cy)
+
         else:
             break
     
-    funcs_draw.escreve_no_video(frame, "Fps: "+str(round(video.get(cv2.CAP_PROP_FPS))),(0,25), (255,0,0))
-    funcs_draw.escreve_no_video(frame, "Frame: "+str(contFrame),(0,60), (0,255,0))
+    Drawer.write_on_video(frame, "Fps: "+str(round(video.get(cv2.CAP_PROP_FPS))),(0,25), (255,0,0))
+    Drawer.write_on_video(frame, "Frame: "+str(contFrame),(0,60), (0,255,0))
      
     cv2.imshow('Rastreando',frame)   
     
@@ -87,87 +92,67 @@ while True:
         
         # Inicializando selecionando com o mouse
         roi = cv2.selectROI('Rastreando',frame)
-        
         # Inicializando por coordenada
-        #roi = (1778, 507, 133, 50)
+        #roi = ()
+        
         # Inicializa o tracker no frame no qual se selecionou a roi
         tracker.init(frame,roi)
-        funcs_manip_arq.salva_dado(roi, 1, './rois/roi'+str(nome_video)+'.txt')
-        
+        Manip.save_data(roi, './rois/roi'+str(nome_video)+'.txt')
+    
+    # Habilita dar pause no vídeo
+    elif k == ord('p'):
+        while True:
+            j = cv2.waitKey(30)
+            if j == ord('v'):
+                break
+            
     elif k == ord('q'):
         break
     
-    contFrame+=1
-    
     videoSaida.write(frame)
     
+    contFrame+=1
     print("Li o frame: "+str(contFrame))
-    
-video.release();cv2.destroyAllWindows() 
-sourceDados1 =["./logs/tempo_decorrido.txt", 
-               "./logs/tempo_decorrido.txt", 
-               "./logs/tempo_decorrido.txt", 
-               "./logs/tempo_decorrido.txt", 
-               "./logs/tempo_decorrido.txt", 
-               "./logs/tempo_decorrido.txt", 
-               "./logs/tempo_decorrido.txt", 
-               "./logs/tempo_decorrido.txt", 
-               "./logs/tempo_decorrido.txt"
-               ] 
-sourceDados2 =["./logs/velocidade_percorrida_em_cada_frame.txt", 
-               "./logs/distancia_percorrida_x_em_cada_frame.txt", 
-               "./logs/distancia_percorrida_em_cada_frame.txt", 
-               "./logs/alturaPercorrida_Ref_h0.txt", 
-               "./logs/velocidade_percorrida_em_cada_frame.txt", 
-               "./logs/distancia_percorrida_x_em_cada_frame.txt",  
-               "./logs/distancia_percorrida_y_em_cada_frame.txt", 
-               "./logs/distancias_cumulativas.txt", 
-               "./logs/alturasCumulativas.txt"
-               ]
-titulos = ["Velocidade x Tempo", 
-           "Distancia Nao Cumulativa x Tempo", 
-           "Distancia x Tempo", 
-           "Altura Baseada em H0 x Tempo", 
-           "Velocidade x Tempo", 
-           "Distancia x Tempo", 
-           "Altura Nao Cumulativa x Tempo", 
-           "Distancia x Tempo", 
-           "Altura Cumulativa x Tempo "
-           ]
-labelsX = ["Tempo (s)", 
-           "Tempo (s)", 
-           "Tempo (s)", 
-           "Tempo (s)", 
-           "Tempo (s)", 
-           "Tempo (s)", 
-           "Tempo (s)", 
-           "Tempo (s)", 
-           "Tempo (s)"
-           ]
-labelsY = ["Velocidade (m/s)", 
-           "Distancia (m)", 
-           "Distancia (m)",  
-           "Altura (m)", 
-           "Velocidade (m/s)", 
-           "Distancia (m)", 
-           "Altura (m)", 
-           "Distancia (m)", 
-           "Altura (m)"
-           ]
 
-funcs_velocidade.salvaGraficosVelocidade(sourceDados1, sourceDados2, titulos, labelsX, labelsY)
+#-----------------Fim do processamento------------------
+video.release();cv2.destroyAllWindows() 
+
+# Títulos
+with open("./Methods/Textual_Inputs/graphics_titles.txt", 'r') as arquivo:
+    titles = arquivo.readlines()
+    titles = [title.replace("\n", "") for title in titles]
+    arquivo.close()
+    
+# Dados
+caminhos_dados_eixo_x = "./logs/tempo_decorrido.txt"
+with open("./Methods/Textual_Inputs/paths_data_to_plot_graphics.txt", 'r') as arquivo:
+    caminhos_dados_eixo_y = arquivo.readlines()
+    caminhos_dados_eixo_y = [caminho.split(" ")[0].replace("\n", "") for caminho in caminhos_dados_eixo_y]
+    arquivo.close()
+
+# Labels
+xlabel = "Tempo (s)"
+ylabels = ["Velocidade (m/s)", 
+           "Distancia (m)", 
+           "Distancia (m)",
+           "Distancia (m)",
+           "Distancia (m)",  
+           ]
 
 print("Frames Lidos: "+str(contFrame))
-print("Salvando Graficos...")
 
+print("Salvando Graficos...")
+for path_data_y_axis, title, ylabel in zip(caminhos_dados_eixo_y, titles, ylabels):
+    Plot.plot_graphic(caminhos_dados_eixo_x, path_data_y_axis, title, xlabel, ylabel)
+    
 with open("./logs/distancias_cumulativas.txt", 'r') as arquivo:
     distsCumulativasDiag = [abs(float(linha)) for linha in arquivo.readlines()]
     arquivo.close()
 print('Distância Percorrida Diagonalmente (m): '+str(max(distsCumulativasDiag)))
 
-with open("./logs/alturaPercorrida_Ref_h0.txt", 'r') as arquivo:
+with open("./logs/poscoes_y_centro_atuais.txt", 'r') as arquivo:
     alturas = [abs(float(linha)) for linha in arquivo.readlines()]
     arquivo.close()
-print("Queda da Mesa (m): "+str(max(alturas)))    
+print("Queda da Mesa (m): "+str(abs(alturas[0]*fatConvPxM - min(alturas)*fatConvPxM)))    
 
 

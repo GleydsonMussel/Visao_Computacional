@@ -1,11 +1,15 @@
 import cv2
 import numpy as np
 import glob
-import redimensiona
+import Cameras_Data
 
-def teste_calibracao(pathCoefficients, mtx, dist):
+def aply_calib(frame, camera_data):
+    clean_frame = cv2.undistort(frame, camera_data.mtx, camera_data.distortion, None, camera_data.newCameraMtx)
+    return clean_frame
+
+def test_calibration(pathCoefficients, mtx, dist):
     # Importa as imagens do diretório           Crio um contador 
-    imgs = glob.glob("./calibracao/amostras/*.png"); cont = 0;           
+    imgs = glob.glob("./Calibration/Samples/*.png"); cont = 0;           
     # Carregar os coeficientes do arquivo
     data = np.load(pathCoefficients)
     if data is None:
@@ -17,10 +21,10 @@ def teste_calibracao(pathCoefficients, mtx, dist):
     for img in imgs:
         frame = cv2.imread(img)
         calib = cv2.undistort(frame, mtx, dist, None, newcameramtx)
-        cv2.imwrite('./calibracao/res_calibracao/calib'+str(cont)+'.png', calib)
+        cv2.imwrite('./Calibration/Res_Calib/calib'+str(cont)+'.png', calib)
         cont+=1
         
-    print("Calibração testada")
+    print("Cagayake! Girls")
 
 
         

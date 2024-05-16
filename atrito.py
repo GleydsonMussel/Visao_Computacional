@@ -1,6 +1,6 @@
 import cv2
 import numpy as np
-import funcoes_auxiliares.funcs_draw as funcs_draw
+import funcoes_auxiliares.Drawer as Drawer
 import funcoes_auxiliares.funcs_manip_arq as funcs_manip_arq
 import funcoes_auxiliares.funcs_velocidade as funcs_velocidade
 import funcoes_auxiliares.plot_graficos as plot_graficos
@@ -68,15 +68,15 @@ if rodaVideo:
                     distpercorridaPassada, alturapercorridaPassada, h0 = funcs_velocidade.calc_velocidades_diagonalmente(x,y,w,h, cx, cy, contFrame, video.get(cv2.CAP_PROP_FPS), distpercorridaPassada, alturapercorridaPassada, h0)
                     #distpercorridaPassada, alturapercorridaPassada, h0 = funcs_velocidade.calc_velocidades(x,y,w,h, cx, cy, contFrame, video.get(cv2.CAP_PROP_FPS), distpercorridaPassada, alturapercorridaPassada, h0)
                 
-                cx, cy = funcs_draw.calc_centro_roi(x,w,y,h)
-                funcs_draw.desenha_roi(frame, x,w,y,h)
-                funcs_draw.desenha_centro(frame, cx, cy)
+                cx, cy = Drawer.calc_centro_roi(x,w,y,h)
+                Drawer.desenha_roi(frame, x,w,y,h)
+                Drawer.desenha_centro(frame, cx, cy)
             
             else:
                 break
         
-        funcs_draw.escreve_no_video(frame, "Fps: "+str(round(video.get(cv2.CAP_PROP_FPS))),(0,25), (255,0,0))
-        funcs_draw.escreve_no_video(frame, "Frame: "+str(contFrame),(0,60), (0,255,0))
+        Drawer.escreve_no_video(frame, "Fps: "+str(round(video.get(cv2.CAP_PROP_FPS))),(0,25), (255,0,0))
+        Drawer.escreve_no_video(frame, "Frame: "+str(contFrame),(0,60), (0,255,0))
         
         cv2.imshow('Rastreando',frame)   
         

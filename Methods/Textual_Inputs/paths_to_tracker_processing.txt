@@ -1,0 +1,11 @@
+./logs/velocidade_percorrida_em_cada_frame.txt 
+./logs/distancia_percorrida_x_em_cada_frame.txt 
+./logs/distancia_percorrida_y_em_cada_frame.txt
+./logs/distancia_percorrida_em_cada_frame.txt 
+./logs/tempo_decorrido.txt 
+./logs/poscoes_x_centro_antigas.txt 
+./logs/poscoes_x_centro_atuais.txt 
+./logs/poscoes_y_centro_antigas.txt
+./logs/poscoes_y_centro_atuais.txt 
+./logs/distancias_cumulativas.txt 
+./logs/alturasCumulativas.txt

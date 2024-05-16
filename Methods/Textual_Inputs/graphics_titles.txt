@@ -1,0 +1,5 @@
+Velocidade x Tempo 
+Deslocamentos em X x Tempo 
+Deslocamentos em Y x Tempo   
+Distância Acumulada em X x Tempo 
+Distância Acumulada em Y x Tempo 
