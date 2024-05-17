@@ -15,13 +15,16 @@ Manip.clean_tracker_processing()
 #-----------------------------PREENCHER-----------------------------------
 
 # SETAR NOME VÍDEO
-nome_video = 'Voo7Editado'; extencao = '.mp4'
+nome_video = 'Voo8'; extencao = '.mp4'
+
+# Caminho para importar os dados da câmera utilizada
+dados_camera = CameraData('./Cameras_Data/celular_Gleydson2/coeficientes.npz')
 
 # SETAR O VALOR DO FATOR DE CONVERSÃO
-fatConvPxM = 0.078
+fatConvPxM = 1/70
 
 # Se desejar aplicar a calibração de câmera, True, se não, False
-aplicaCalib = True
+aplicaCalib = False
 
 #--------------------------------------------------------------------------
 
@@ -42,8 +45,6 @@ video = cv2.VideoCapture('./videos/Voos/'+nome_video+extencao)
 alturaVideo = int(video.get(cv2.CAP_PROP_FRAME_HEIGHT)); 
 larguraVideo = int(video.get(cv2.CAP_PROP_FRAME_WIDTH))
 videoSaida = cv2.VideoWriter('./videos/Outputs/'+nome_video+'_output'+extencao, cv2.VideoWriter_fourcc('m', 'p', '4', 'v'), video.get(cv2.CAP_PROP_FPS), (larguraVideo, alturaVideo))
-
-dados_camera = CameraData('./Cameras_Data/celular_Gleydson/coeficientes.npz')
  
 distancia_acumulada_X = 0; altura_acumulada = 0
 contFrame = 0

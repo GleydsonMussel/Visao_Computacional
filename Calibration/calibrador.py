@@ -3,14 +3,17 @@ import numpy as np
 import glob
 import sys
 import os
-from funcoes_auxiliares import teste_calibrador
-from funcoes_auxiliares import redimensiona
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+import Methods.Manipulate_Files as Manip
+import Methods.Calibration as Calib
 
-# Obtenha o caminho absoluto para a pasta 'funcoes_auxiliares'
-caminho_funcoes_auxiliares = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'funcoes_auxiliares'))
-# Adicione o caminho ao diretório de busca do Python
-sys.path.append(caminho_funcoes_auxiliares)
+#-----------------------------PREENCHER-----------------------------------
+pathCoefficients = './Cameras_Data/celular_Gleydson2/coeficientes.npz'
+# Tamanho dos quadrados na vida real em m
+tamQuad = 0.025
+#--------------------------------------------------------------------------
 
+# Dimensões do tabuleiro
 CHECKERBOARD = (7, 11)
 
 # Critério de parada
@@ -27,8 +30,6 @@ objp[0,:,:2] = np.mgrid[0:CHECKERBOARD[0], 0:CHECKERBOARD[1]].T.reshape(-1, 2)
 
 lins, cols, prof = objp.shape
 
-# Tamanho dos quadrados na vida real em m
-tamQuad = 0.025
 # Preencho considerando a largura real dos quadrados em m
 for i in range(0, lins):
     for j in range(0, cols): 
@@ -36,7 +37,7 @@ for i in range(0, lins):
 
 # Pegas as imagens na pasta
 
-imgs = glob.glob("./calibracao/amostras/*.png"); cont = 0
+imgs = glob.glob("./Calibration/Samples/*.png"); cont = 0
 
 for file in imgs:
 
@@ -61,9 +62,9 @@ for file in imgs:
         # Draw and display the corners
         img = cv2.drawChessboardCorners(frame, CHECKERBOARD, corners2, achouNumeroDePontosDeReferenciaCerto)
 
-        cv2.imwrite('./calibracao/res_calibracao/original'+str(cont)+'.png', img)
+        cv2.imwrite('./Calibration/Res_Calib/original'+str(cont)+'.png', img)
         
-        cv2.imshow('Calibrando',redimensiona.redimensiona(50, img))
+        cv2.imshow('Calibrando', img)
         
         k = cv2.waitKey(1) 
 
@@ -74,8 +75,9 @@ for file in imgs:
     
     else:
         print("Procurando pontos... "+str(cont))
+        cv2.destroyAllWindows()
     
-    cv2.imshow('Calibrando', redimensiona.redimensiona(50, frame))
+    cv2.imshow('Calibrando', frame)
     
     cont+=1
     
@@ -88,8 +90,6 @@ h,  w = gray.shape[:2]
 # Refina a matrix dos coeficientes de distorção
 newcameramtx, roi = cv2.getOptimalNewCameraMatrix(mtx, dist, (w,h), 0, (w,h))
 
-pathCoefficients = './coeficientes/celular_Ronaldo/coeficientes2.npz'
-
 np.savez(pathCoefficients, distortion=dist, camera=mtx, new_camera = newcameramtx)
 
 incerteza = 0
@@ -99,9 +99,9 @@ for i in range(len(objpoints)):
  error = cv2.norm(imgpoints[i], imgpoints2, cv2.NORM_L2)/len(imgpoints2)
  incerteza += error
  
-print( "Incerteza total: {}".format(incerteza/len(objpoints)))
+print("Incerteza total: {}".format(incerteza/len(objpoints)))
 
-teste_calibrador.teste_calibracao(pathCoefficients, mtx, dist)
+Calib.test_calibration(pathCoefficients, mtx, dist)
 
 
 

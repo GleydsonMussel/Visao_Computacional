@@ -1,8 +1,8 @@
-
+import cv2
 import math
 import Methods.Drawer as Drawer
 import Methods.Manipulate_Files as Manip
-import Methods.Graphics as Plot
+import Classes.CameraData as CameraData
 
 # Calcula o ponto do centro da região de interesse
 def get_center_roi(x, w, y, h):
@@ -76,7 +76,43 @@ def calc_speed_diagonal(x, y, w, h, cxant, cyant, iteracao, fps, distancia_acumu
     
     # Retorno
     return [distancia_acumulada_X, altura_acumulada]
-     
+
+# Calcula a posição do centro do marcador ArUco
+def calc_marker_positions(corners):
+    """
+    Calcula as posições centrais dos marcadores ArUco detectados.
+
+    Args:
+        corners (list): Lista de esquinas dos marcadores detectados.
+
+    Returns:
+        list: Lista de tuplas com as posições centrais (x, y) dos marcadores.
+    """
+    positions = []
+    for corner in corners:
+        corner = corner.reshape((4, 2))
+        top_left, top_right, bottom_right, bottom_left = corner
+        center_x = (top_left[0] + top_right[0] + bottom_right[0] + bottom_left[0]) / 4.0
+        center_y = (top_left[1] + top_right[1] + bottom_right[1] + bottom_left[1]) / 4.0
+        positions.append((center_x, center_y))
+    return positions
+
+# Calcula os vetores de rotação e translação relacionados ao ArUco com relação a câmera
+def calc_marker_position(corners, marker_length, camera_data):
+    """
+    Estima a pose dos marcadores ArUco.
+
+    Args:
+        corners (list): Lista de esquinas dos marcadores detectados.
+        marker_length (float): Tamanho do lado do marcador (em metros).
+        camera_matrix (numpy.ndarray): Matriz de calibração da câmera.
+        dist_coeffs (numpy.ndarray): Coeficientes de distorção da câmera.
+
+    Returns:
+        tuple: Vetores de rotação e translação dos marcadores detectados.
+    """
+    rvecs, tvecs, _ = cv2.aruco.estimatePoseSingleMarkers(corners, marker_length, camera_data.mtx, camera_data.distortion)
+    return rvecs, tvecs
         
      
 

@@ -1,5 +1,8 @@
 import cv2
 import winsound
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 import Methods.Manipulate_Files as Manip
 
 # Limpa os diretórios necessários para realizar a calibração
@@ -8,7 +11,7 @@ Manip.clean_calibrations_processing()
 # Parâmetros para fazer o barulho de quando um frame é salvo
 frequency = 2000 ; duration = 300; cont = 0  
 
-video = cv2.VideoCapture('./videos/Calibracao/Cel_Gleydson/calibGleydson.mp4')
+video = cv2.VideoCapture('./videos/Calibracao/Google_Pixel_7/video.mp4')
 
 while True:
 

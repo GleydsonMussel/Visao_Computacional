@@ -1,8 +1,8 @@
-meuambiente/*
+Calibration/Res_Calib/*
+Calibration/Samples/*
 logs/*
 graficos/*
 rois/*
 frames/*
-videos/Outputs/*
-funcoes_auxiliares/__pycache__/*
+videos/*
 rois/*

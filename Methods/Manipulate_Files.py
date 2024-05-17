@@ -27,7 +27,7 @@ def clean_tracker_processing():
     [clean_folder(dir) for dir in dirs_to_clean]
             
 def clean_calibrations_processing():
-    dirs_to_clean = ['./calibracao/res_calibracao/', './calibracao/amostras/', './calibracao/res_calib_teste_video/']
+    dirs_to_clean = ['./Calibration/Res_Calib/', './Calibration/Samples/']
     [clean_folder(dir) for dir in dirs_to_clean]
       
 

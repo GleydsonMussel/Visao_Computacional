@@ -18,6 +18,7 @@ font_lgd={
     'family':'Times New Roman',
 }
 
+# Importador Genérico de Dados
 def get_dados(caminho_dado):
     with open(caminho_dado, 'r') as arquivo:
         dados = arquivo.readlines()
@@ -25,6 +26,7 @@ def get_dados(caminho_dado):
         arquivo.close()
     return dados 
 
+# Plotador Genérico
 def plot_graphic(path_data_1, path_data_2, title, lgdX, lgdY, limX=None, limY=None):
     dado1=get_dados(path_data_1); dado2 = get_dados(path_data_2)
     plt.plot(dado1, dado2)
@@ -35,6 +37,7 @@ def plot_graphic(path_data_1, path_data_2, title, lgdX, lgdY, limX=None, limY=No
     plt.savefig("./graficos/"+title+".png")
     plt.close()
 
+# Plotador Genérico para a interpolação do dado passado
 def plot_interpolation(path_data_1, path_data_2, title, lgdX, lgdY,  lim_inf_dados1, lim_sup_dados1, limX=None, limY=None):
     dados1 = get_dados(path_data_1); dados2 = get_dados(path_data_2)
     polinomio = np.polyfit(dados1, dados2, 3)
@@ -48,6 +51,7 @@ def plot_interpolation(path_data_1, path_data_2, title, lgdX, lgdY,  lim_inf_dad
     plt.savefig("./graficos/"+title+"POLI.png")
     plt.close()
 
+# Plotador de gráfico do ensaio do teste de atrito
 def plot_friction_test(tempos, distsCru, distsPoli,title, batizaX, batizaY):
     plt.title(title)
     plt.xlabel(batizaX); plt.ylabel(batizaY)
@@ -57,7 +61,15 @@ def plot_friction_test(tempos, distsCru, distsPoli,title, batizaX, batizaY):
     plt.grid()
     plt.savefig("./graficos/"+title+".png")
         
-        
+# Plotador Genérico
+def plot_graphic_with_direct_values(values_x_axis, values_y_axis, title, lgdX, lgdY, limX=None, limY=None):
+    plt.plot(values_x_axis, values_y_axis)
+    plt.title(title, fontdict=font_title); plt.xlabel(lgdX, fontdict=font_label); plt.ylabel(lgdY, fontdict=font_label)
+    plt.grid()
+    if limX != None and limY!=None:
+        plt.axes([limX[0], limX[1], limY[0], limY[1]]) 
+    plt.savefig("./graficos/"+title+".png")
+    plt.close()  
 
     
             
