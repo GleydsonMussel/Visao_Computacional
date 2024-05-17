@@ -15,7 +15,7 @@ Manip.clean_tracker_processing()
 #-----------------------------PREENCHER-----------------------------------
 
 # SETAR NOME VÍDEO
-nome_video = 'Teste_get_z_ArUco_10cm_de_distancia'; extencao = '.mp4'
+nome_video = 'Teste_get_z_ArUco_21cm_de_distancia'; extencao = '.mp4'
 
 # Setar o aruko utilizado
 marker_used = "./ArUco/ArUco_Markers/marker_DICT_7X7_50_id_42.png"
@@ -33,7 +33,7 @@ dados_camera = CameraData('./Cameras_Data/celular_Gleydson2/coeficientes.npz')
 fatConvPxM = 1/70
 
 # Se desejar aplicar a calibração de câmera, True, se não, False
-aplicaCalib = False
+aplicaCalib = True
 
 #--------------------------------------------------------------------------
 

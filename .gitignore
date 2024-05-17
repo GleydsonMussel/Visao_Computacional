@@ -6,3 +6,6 @@ rois/*
 frames/*
 videos/*
 rois/*
+meuambiente/*
+Classes/__pycache__/*
+Methods/__pycache__/*
