@@ -15,22 +15,20 @@ Manip.clean_tracker_processing()
 #-----------------------------PREENCHER-----------------------------------
 
 # SETAR NOME VÍDEO
-nome_video = 'Teste_get_z_ArUco_21cm_de_distancia'; extencao = '.mp4'
+nome_video = 'teste_ArUco_LUSKA'; extencao = '.mp4'
 
 # Setar o aruko utilizado
-marker_used = "./ArUco/ArUco_Markers/marker_DICT_7X7_50_id_42.png"
+marker_used = "./ArUco/ArUco_Markers/marker_DICT_7X7_50_id_12.png"
 
 # Dicionário ArUco utilizado
 arucoDict = cv2.aruco.getPredefinedDictionary(cv2.aruco.DICT_7X7_50)
 
-# Tamanho do marcador em metros
-marker_size = 0.04
+# Tamanho do marcador em metros 
+marker_size = 0.106 # (Id 12 impresso)
+#marker_size = 0.08
 
 # Caminho para importar os dados da câmera utilizada
-dados_camera = CameraData('./Cameras_Data/celular_Gleydson2/coeficientes.npz')
-
-# SETAR O VALOR DO FATOR DE CONVERSÃO
-fatConvPxM = 1/70
+dados_camera = CameraData('./Cameras_Data/celular_Gleydson2/coeficientes_2.npz')
 
 # Se desejar aplicar a calibração de câmera, True, se não, False
 aplicaCalib = True
@@ -83,13 +81,14 @@ while True:
         # Obtem os vetores de rotação e translação da câmera
         rvecs, tvecs = Calculator.calc_marker_position(corners, marker_size, dados_camera)
         
-        for rvec, tvec, id in zip(rvecs, tvecs, ids):
-            cv2.drawFrameAxes(frame, dados_camera.mtx, dados_camera.distortion, rvec, tvec, 0.1)
-            print(f"ID: {id[0]}")
-            print(f"Translation Vector (tvec): {tvec.flatten()}")
-            print(f"Position in Z: {tvec[0][2]} meters")
-            tempos.append(1/round(video.get(cv2.CAP_PROP_FPS)) * contFrame)
-            marker_z_positions.append(tvec[0][2])
+        if rvecs is not None:
+            for rvec, tvec, id in zip(rvecs, tvecs, ids):
+                cv2.drawFrameAxes(frame, dados_camera.mtx, dados_camera.distortion, rvec, tvec, 0.1)
+                print(f"ID: {id[0]}")
+                print(f"Translation Vector (tvec): {tvec.flatten()}")
+                print(f"Position in Z: {tvec[0][2]} meters")
+                tempos.append(1/round(video.get(cv2.CAP_PROP_FPS)) * contFrame)
+                marker_z_positions.append(tvec[0][2])
         
         # Calcula a posição do centro do marcador ArUco
         posicao = Calculator.calc_marker_positions(corners)

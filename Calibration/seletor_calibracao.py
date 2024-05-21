@@ -11,7 +11,7 @@ Manip.clean_calibrations_processing()
 # Parâmetros para fazer o barulho de quando um frame é salvo
 frequency = 2000 ; duration = 300; cont = 0  
 
-video = cv2.VideoCapture('./videos/Calibracao/Google_Pixel_7/video.mp4')
+video = cv2.VideoCapture('./videos/Calibracao/Google_Pixel_7/video2.mp4')
 
 while True:
 

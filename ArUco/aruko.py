@@ -45,9 +45,9 @@ ARUCO_DICT = {
 }
 
 # ID do marcador a ser gerado
-marker_id = 24
+marker_id = 12
 # Tamanho do marcador em pixel
-marker_size = 200
+marker_size = 400
 # Dicionário a ser utilizado
 dict_to_use = "DICT_7X7_50"
 
