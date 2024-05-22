@@ -15,7 +15,7 @@ Manip.clean_tracker_processing()
 #-----------------------------PREENCHER-----------------------------------
 
 # SETAR NOME VÍDEO
-nome_video = 'teste_ArUco_LUSKA'; extencao = '.mp4'
+nome_video = 'Teste_ArUco_Casa_1m_55cm'; extencao = '.mp4'
 
 # Setar o aruko utilizado
 marker_used = "./ArUco/ArUco_Markers/marker_DICT_7X7_50_id_12.png"
@@ -24,7 +24,7 @@ marker_used = "./ArUco/ArUco_Markers/marker_DICT_7X7_50_id_12.png"
 arucoDict = cv2.aruco.getPredefinedDictionary(cv2.aruco.DICT_7X7_50)
 
 # Tamanho do marcador em metros 
-marker_size = 0.106 # (Id 12 impresso)
+marker_size = 0.105 # (Id 12 impresso)
 #marker_size = 0.08
 
 # Caminho para importar os dados da câmera utilizada
@@ -38,7 +38,7 @@ aplicaCalib = True
 # Cria os parâmetros para o ArUco
 arucoParams = cv2.aruco.DetectorParameters()
 
-video = cv2.VideoCapture('./videos/Voos/'+nome_video+extencao)
+video = cv2.VideoCapture('./videos/Testes_ArUco/'+nome_video+extencao)
 alturaVideo = int(video.get(cv2.CAP_PROP_FRAME_HEIGHT)); 
 larguraVideo = int(video.get(cv2.CAP_PROP_FRAME_WIDTH))
 videoSaida = cv2.VideoWriter('./videos/Outputs/'+nome_video+'_output'+extencao, cv2.VideoWriter_fourcc('m', 'p', '4', 'v'), video.get(cv2.CAP_PROP_FPS), (larguraVideo, alturaVideo))
@@ -119,8 +119,11 @@ while True:
     print("Li o frame: "+str(contFrame))
 
 #-----------------Fim do processamento------------------
-video.release();cv2.destroyAllWindows() 
+video.release(); cv2.destroyAllWindows() 
 
+marker_z_positions_np_array = np.array(marker_z_positions)
+
+np.save("./logs/Marker_z_Positions"+nome_video+".np", marker_z_positions_np_array)
 Plot.plot_graphic_with_direct_values(tempos, marker_z_positions, "Posicao em Z do Marcador x Tempo", "Tempo (s)", "Posicao (m)")
 
 
