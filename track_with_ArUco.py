@@ -15,7 +15,7 @@ Manip.clean_tracker_processing()
 #-----------------------------PREENCHER-----------------------------------
 
 # SETAR NOME VÍDEO
-nome_video = 'Teste_ArUco_Casa_1m_55cm'; extencao = '.mp4'
+nome_video = 'Teste_Marcos_Meu_Celular'; extencao = '.mp4'
 
 # Setar o aruko utilizado
 marker_used = "./ArUco/ArUco_Markers/marker_DICT_7X7_50_id_12.png"
@@ -37,6 +37,30 @@ aplicaCalib = True
 
 # Cria os parâmetros para o ArUco
 arucoParams = cv2.aruco.DetectorParameters()
+
+# Ajustar parâmetros do thresholding adaptativo
+arucoParams.adaptiveThreshWinSizeMin = 3    # Padrão = 5  (pixels)
+arucoParams.adaptiveThreshWinSizeMax = 23   # Padrão = 23 (pixels)
+arucoParams.adaptiveThreshWinSizeStep = 1   # Padrão = 10 (pixels)
+arucoParams.adaptiveThreshConstant = 7      # Padrão = 7  
+# Ajustar os parâmetros
+arucoParams.minMarkerPerimeterRate = 0.005       # Padrão = 0.03 (%)
+arucoParams.maxMarkerPerimeterRate = 4.0        # Padrão = 4.0 (%)
+arucoParams.polygonalApproxAccuracyRate = 0.056  # Padrão = 0.03 (pixels)
+
+# Ajustar o método de refinamento de cantos
+arucoParams.cornerRefinementMethod = cv2.aruco.CORNER_REFINE_SUBPIX
+arucoParams.cornerRefinementWinSize =  5    # Padrão = 5 pixels
+arucoParams.cornerRefinementMaxIterations = 30 # Padrão = 30 iterações
+
+# Ajustar a precisão mínima do refinamento de cantos
+arucoParams.cornerRefinementMinAccuracy = 0.01  # Padrão = 0.01 pixels
+# Ajustar os pixels por célula para a remoção da perspectiva
+arucoParams.perspectiveRemovePixelPerCell = 4  # Padrão = 4 pixels
+# Ajustar a taxa máxima de bits errôneos na borda
+arucoParams.maxErroneousBitsInBorderRate = 0.35  # Padrão = 0.35 bits
+# Ajustar a taxa de correção de erros
+arucoParams.errorCorrectionRate = 0.6  # Padrão = 0.6
 
 video = cv2.VideoCapture('./videos/Testes_ArUco/'+nome_video+extencao)
 alturaVideo = int(video.get(cv2.CAP_PROP_FRAME_HEIGHT)); 
@@ -79,7 +103,8 @@ while True:
         cv2.aruco.drawDetectedMarkers(frame, corners, ids)
         
         # Obtem os vetores de rotação e translação da câmera
-        rvecs, tvecs = Calculator.calc_marker_position(corners, marker_size, dados_camera)
+        #rvecs, tvecs = Calculator.calc_marker_position(corners, marker_size, dados_camera)
+        rvecs, tvecs = [None, None]
         
         if rvecs is not None:
             for rvec, tvec, id in zip(rvecs, tvecs, ids):
