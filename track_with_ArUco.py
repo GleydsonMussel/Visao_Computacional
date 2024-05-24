@@ -38,29 +38,24 @@ aplicaCalib = True
 # Cria os parâmetros para o ArUco
 arucoParams = cv2.aruco.DetectorParameters()
 
-# Ajustar parâmetros do thresholding adaptativo
-arucoParams.adaptiveThreshWinSizeMin = 3    # Padrão = 5  (pixels)
-arucoParams.adaptiveThreshWinSizeMax = 23   # Padrão = 23 (pixels)
-arucoParams.adaptiveThreshWinSizeStep = 1   # Padrão = 10 (pixels)
-arucoParams.adaptiveThreshConstant = 7      # Padrão = 7  
-# Ajustar os parâmetros
-arucoParams.minMarkerPerimeterRate = 0.005       # Padrão = 0.03 (%)
-arucoParams.maxMarkerPerimeterRate = 4.0        # Padrão = 4.0 (%)
-arucoParams.polygonalApproxAccuracyRate = 0.056  # Padrão = 0.03 (pixels)
+# DETECÇÃO
+arucoParams.adaptiveThreshWinSizeMin = 3                    # Padrão = 5  (pixels)
+arucoParams.adaptiveThreshWinSizeMax = 30                   # Padrão = 23 (pixels)
+arucoParams.adaptiveThreshWinSizeStep = 1                   # Padrão = 10 (pixels)
+arucoParams.adaptiveThreshConstant = 7                      # Padrão = 7  
+arucoParams.minMarkerPerimeterRate = 0.001                  # Padrão = 0.03 (%) # Testar 0.03
+arucoParams.maxMarkerPerimeterRate = 4.0                    # Padrão = 4.0 (%)
+arucoParams.perspectiveRemovePixelPerCell = 6               # Padrão = 4 pixels
+arucoParams.perspectiveRemoveIgnoredMarginPerCell = 0.10    # Padrão = 0.13 (%)
+arucoParams.maxErroneousBitsInBorderRate = 0.35             # Padrão = 0.35 (%) # Testar 0.40
+arucoParams.errorCorrectionRate = 0.7                       # Padrão = 0.6 (%)  # Testar 0.75 
 
-# Ajustar o método de refinamento de cantos
+# REFINAMENTO DO DESENHO DO ARUCO
+arucoParams.polygonalApproxAccuracyRate = 0.06  # Padrão = 0.03 (pixels)
 arucoParams.cornerRefinementMethod = cv2.aruco.CORNER_REFINE_SUBPIX
-arucoParams.cornerRefinementWinSize =  5    # Padrão = 5 pixels
+arucoParams.cornerRefinementWinSize =  10    # Padrão = 5 pixels # Testar 6
 arucoParams.cornerRefinementMaxIterations = 30 # Padrão = 30 iterações
-
-# Ajustar a precisão mínima do refinamento de cantos
 arucoParams.cornerRefinementMinAccuracy = 0.01  # Padrão = 0.01 pixels
-# Ajustar os pixels por célula para a remoção da perspectiva
-arucoParams.perspectiveRemovePixelPerCell = 4  # Padrão = 4 pixels
-# Ajustar a taxa máxima de bits errôneos na borda
-arucoParams.maxErroneousBitsInBorderRate = 0.35  # Padrão = 0.35 bits
-# Ajustar a taxa de correção de erros
-arucoParams.errorCorrectionRate = 0.6  # Padrão = 0.6
 
 video = cv2.VideoCapture('./videos/Testes_ArUco/'+nome_video+extencao)
 alturaVideo = int(video.get(cv2.CAP_PROP_FRAME_HEIGHT)); 
