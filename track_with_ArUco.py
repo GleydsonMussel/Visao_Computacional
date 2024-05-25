@@ -6,6 +6,7 @@ import Methods.Manipulate_Files as Manip
 import Methods.Calculator as Calculator
 import Methods.Graphics as Plot
 import Methods.Calibration as Calibration
+import Methods.ArUco_Things as ArUco_Things
 
 # Garante que as pastas necessárias existem
 Manip.create_folders()
@@ -15,7 +16,7 @@ Manip.clean_tracker_processing()
 #-----------------------------PREENCHER-----------------------------------
 
 # SETAR NOME VÍDEO
-nome_video = 'Teste_Marcos_Meu_Celular'; extencao = '.mp4'
+nome_video = 'Teste_Arthur_2x'; extencao = '.mp4'
 
 # Setar o aruko utilizado
 marker_used = "./ArUco/ArUco_Markers/marker_DICT_7X7_50_id_12.png"
@@ -35,32 +36,17 @@ aplicaCalib = True
 
 #--------------------------------------------------------------------------
 
+# Cria pasta para exportar os dados necessários para a realização dessa análise
+caminho_pasta_output = "./dados_extraidos/"+nome_video
+caminho_pasta_output = Manip.create_folder(caminho_pasta_output)
+
 # Cria os parâmetros para o ArUco
-arucoParams = cv2.aruco.DetectorParameters()
-
-# DETECÇÃO
-arucoParams.adaptiveThreshWinSizeMin = 3                    # Padrão = 5  (pixels)
-arucoParams.adaptiveThreshWinSizeMax = 30                   # Padrão = 23 (pixels)
-arucoParams.adaptiveThreshWinSizeStep = 1                   # Padrão = 10 (pixels)
-arucoParams.adaptiveThreshConstant = 7                      # Padrão = 7  
-arucoParams.minMarkerPerimeterRate = 0.001                  # Padrão = 0.03 (%) # Testar 0.03
-arucoParams.maxMarkerPerimeterRate = 4.0                    # Padrão = 4.0 (%)
-arucoParams.perspectiveRemovePixelPerCell = 6               # Padrão = 4 pixels
-arucoParams.perspectiveRemoveIgnoredMarginPerCell = 0.10    # Padrão = 0.13 (%)
-arucoParams.maxErroneousBitsInBorderRate = 0.35             # Padrão = 0.35 (%) # Testar 0.40
-arucoParams.errorCorrectionRate = 0.7                       # Padrão = 0.6 (%)  # Testar 0.75 
-
-# REFINAMENTO DO DESENHO DO ARUCO
-arucoParams.polygonalApproxAccuracyRate = 0.06  # Padrão = 0.03 (pixels)
-arucoParams.cornerRefinementMethod = cv2.aruco.CORNER_REFINE_SUBPIX
-arucoParams.cornerRefinementWinSize =  10    # Padrão = 5 pixels # Testar 6
-arucoParams.cornerRefinementMaxIterations = 30 # Padrão = 30 iterações
-arucoParams.cornerRefinementMinAccuracy = 0.01  # Padrão = 0.01 pixels
+arucoParams = ArUco_Things.generate_detector_params(caminho_pasta_output)
 
 video = cv2.VideoCapture('./videos/Testes_ArUco/'+nome_video+extencao)
 alturaVideo = int(video.get(cv2.CAP_PROP_FRAME_HEIGHT)); 
 larguraVideo = int(video.get(cv2.CAP_PROP_FRAME_WIDTH))
-videoSaida = cv2.VideoWriter('./videos/Outputs/'+nome_video+'_output'+extencao, cv2.VideoWriter_fourcc('m', 'p', '4', 'v'), video.get(cv2.CAP_PROP_FPS), (larguraVideo, alturaVideo))
+videoSaida = cv2.VideoWriter(caminho_pasta_output+nome_video+'_Output'+extencao, cv2.VideoWriter_fourcc('m', 'p', '4', 'v'), video.get(cv2.CAP_PROP_FPS), (larguraVideo, alturaVideo))
  
 contFrame = 0    
 tempos = []   
