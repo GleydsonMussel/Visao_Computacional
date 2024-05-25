@@ -34,8 +34,10 @@ def plot_graphic(path_data_1, path_data_2, title, lgdX, lgdY, limX=None, limY=No
     plt.plot(dado1, dado2)
     plt.title(title, fontdict=font_title); plt.xlabel(lgdX, fontdict=font_label); plt.ylabel(lgdY, fontdict=font_label)
     plt.grid()
-    if limX != None and limY!=None:
-        plt.axes([limX[0], limX[1], limY[0], limY[1]]) 
+    if limX != None:
+        plt.xlim([limX[0], limX[1]])
+    if limY != None:
+        plt.ylim([limY[0], limY[1]]) 
     plt.savefig("./graficos/"+title+".png")
     plt.close()
 
@@ -48,8 +50,10 @@ def plot_interpolation(path_data_1, path_data_2, title, lgdX, lgdY,  lim_inf_dad
     plt.plot(vetDados1, valsDados2)
     plt.title(title, fontdict=font_title); plt.xlabel(lgdX, fontdict=font_label); plt.ylabel(lgdY, fontdict=font_label)
     plt.grid()
-    if limX != None and limY!=None:
-        plt.axes([limX[0], limX[1], limY[0], limY[1]]) 
+    if limX != None:
+        plt.xlim([limX[0], limX[1]])
+    if limY != None:
+        plt.ylim([limY[0], limY[1]]) 
     plt.savefig("./graficos/"+title+"POLI.png")
     plt.close()
 
@@ -68,12 +72,14 @@ def plot_graphic_with_direct_values(values_x_axis, values_y_axis, title, lgdX, l
     plt.plot(values_x_axis, values_y_axis)
     plt.title(title, fontdict=font_title); plt.xlabel(lgdX, fontdict=font_label); plt.ylabel(lgdY, fontdict=font_label)
     plt.grid()
-    if limX != None and limY!=None:
-        plt.axes([limX[0], limX[1], limY[0], limY[1]]) 
+    if limX != None:
+        plt.xlim([limX[0], limX[1]])
+    if limY != None:
+        plt.ylim([limY[0], limY[1]]) 
     plt.savefig("./graficos/"+title+".png")
     plt.close()  
 
-def plot_graphic_from_pickles_dicts(path_to_save_figura, data_1_path, data_2_path, title, lgdX, lgdY, limX=None, limY=None, path_to_reference_positions = None, video_duration = None):
+def plot_graphic_from_pickles_dicts(path_to_save_figura, data_1_path, data_2_path, title, lgdX, lgdY, limX=None, limY=None, path_to_reference_positions = None, video_duration = None, ids_wanted_markers = None):
     # Importando dados
     with open(data_1_path, 'rb') as file1, open(data_2_path, 'rb') as file2:
         data_1 = pickle.load(file1)
@@ -81,10 +87,8 @@ def plot_graphic_from_pickles_dicts(path_to_save_figura, data_1_path, data_2_pat
         file1.close()
         file2.close()
         
-    dict_keys_data_1 = list(data_1.keys())
-    dict_keys_data_2 = list(data_1.keys())
-    for key1, key2 in zip(dict_keys_data_1, dict_keys_data_2):
-        plt.plot(data_1[key2][0:len(data_2[key1])], data_2[key1], label="Id_"+str(key1))
+    for key in ids_wanted_markers:
+        plt.plot(data_1[key][0:len(data_2[key])], data_2[key], label="Id_"+str(key))
     # Se passar as disntâncias de referência para cada marcador
     if path_to_reference_positions is not None:
         with open(path_to_reference_positions, 'rb') as file3:
@@ -100,8 +104,10 @@ def plot_graphic_from_pickles_dicts(path_to_save_figura, data_1_path, data_2_pat
     plt.ylabel(lgdY, fontdict=font_label)
     plt.grid()
     plt.legend()    
-    if limX != None and limY!=None:
-        plt.axes([limX[0], limX[1], limY[0], limY[1]])
+    if limX != None:
+        plt.xlim([limX[0], limX[1]])
+    if limY != None:
+        plt.ylim([limY[0], limY[1]])
     plt.savefig(path_to_save_figura)
 
 with open("./dados_extraidos/Teste_Arthur_2x_take_8/markers_z_positions.pkl", "rb") as file1, open("./dados_extraidos/Teste_Arthur_2x_take_8/times_to_each_marker.pkl", "rb") as file2:
@@ -109,8 +115,8 @@ with open("./dados_extraidos/Teste_Arthur_2x_take_8/markers_z_positions.pkl", "r
         tempos = pickle.load(file2)
         file1.close()
         file2.close()
-#calc_speed_in_Z_axis("./dados_extraidos/Teste_Arthur_2x_take_8/", "speed_markers.pkl", marker_z_postions, tempos)
-plot_graphic_from_pickles_dicts("./dados_extraidos/Teste_Arthur_2x_take_8/Velocidade_em_Z_x_Tempo.png", "./dados_extraidos/Teste_Arthur_2x_take_8/times_to_each_marker.pkl", "./dados_extraidos/Teste_Arthur_2x_take_8/speed_markers.pkl",  "Velocidade em Z do Marcador x Tempo", "Tempo (s)", "Velocidade (m/s)", video_duration=20)
+#calc_speed_in_Z_axis("./dados_extraidos/Teste_Arthur_2x_take_8/", "speed_markers.pkl", marker_z_postions, tempos, [0])
+#plot_graphic_from_pickles_dicts("./dados_extraidos/Teste_Arthur_2x_take_8/Velocidade_em_Z_x_Tempo_Limitado.png", "./dados_extraidos/Teste_Arthur_2x_take_8/times_to_each_marker.pkl", "./dados_extraidos/Teste_Arthur_2x_take_8/speed_markers.pkl",  "Velocidade em Z do Marcador x Tempo", "Tempo (s)", "Velocidade (m/s)", limX=[0,5], limY=[-2,2],video_duration=20, ids_wanted_markers=[0])
     
             
     

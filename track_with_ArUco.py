@@ -28,6 +28,7 @@ arucoDict = cv2.aruco.getPredefinedDictionary(cv2.aruco.DICT_7X7_50)
 # Tamanho do marcador em metros 
 #marker_size = 0.105 # (Id 12 impresso)
 #marker_size = 0.08
+
 tempos = {
     49:[],
     0:[],
@@ -42,6 +43,10 @@ posicoes_referencia={
     49:9.47,
     24:3.47
 }
+
+# (m/s) Valor absurdo de velocidade que com certeza não é alcançado na realidae, usada para fazer o ajuste da curva
+limiar_superior_de_velocidade = 10
+
 # Caminho para importar os dados da câmera utilizada
 dados_camera = CameraData('./Cameras_Data/celular_Gleydson2/coeficientes_Zoom_2x.npz')
 
@@ -146,13 +151,13 @@ while True:
 video.release(); cv2.destroyAllWindows()
 duracao_video = contFrame/fps
 
-Calculator.calc_speed_in_Z_axis(caminho_pasta_output, "speed_markers.pkl", marker_z_positions, tempos)
+Calculator.calc_speed_in_Z_axis(caminho_pasta_output, "speed_markers.pkl", marker_z_positions, tempos, [0])
 Manip.save_as_pickle_data(tempos, caminho_pasta_output, "times_to_each_marker.pkl")
 Manip.save_as_pickle_data(marker_z_positions, caminho_pasta_output, "markers_z_positions.pkl")
 Manip.save_as_pickle_data(posicoes_referencia, caminho_pasta_output, "reference_positions.pkl")
 
-Plot.plot_graphic_from_pickles_dicts(caminho_pasta_output+"Posicao_Z_x_Tempo", caminho_pasta_output+"times_to_each_marker.pkl", caminho_pasta_output+"markers_z_positions.pkl", "Posicao em Z do Marcador x Tempo", "Tempo (s)", "Posicao (m)", video_duration=duracao_video)
-Plot.plot_graphic_from_pickles_dicts(caminho_pasta_output+"Velocidade_em_Z_x_Tempo", caminho_pasta_output+"times_to_each_marker.pkl", caminho_pasta_output+"speed_markers.pkl", "Velocidade em Z do Marcador x Tempo", "Tempo (s)", "Velocidade (m/s)", video_duration=duracao_video)
+Plot.plot_graphic_from_pickles_dicts(caminho_pasta_output+"Posicao_Z_x_Tempo", caminho_pasta_output+"times_to_each_marker.pkl", caminho_pasta_output+"markers_z_positions.pkl", "Posicao em Z do Marcador x Tempo", "Tempo (s)", "Posicao (m)", video_duration=duracao_video, ids_wanted_markers=[49,0,24])
+Plot.plot_graphic_from_pickles_dicts(caminho_pasta_output+"Velocidade_em_Z_x_Tempo", caminho_pasta_output+"times_to_each_marker.pkl", caminho_pasta_output+"speed_markers.pkl", "Velocidade em Z do Marcador x Tempo", "Tempo (s)", "Velocidade (m/s)", video_duration=duracao_video, ids_wanted_markers=[0])
 
    
 

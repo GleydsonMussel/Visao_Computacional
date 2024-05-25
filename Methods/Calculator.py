@@ -1,6 +1,7 @@
 import cv2
 import math
 import copy as cp
+import numpy as np
 from Manipulate_Files import save_data, save_as_pickle_data
 
 # Calcula o ponto do centro da região de interesse
@@ -113,16 +114,22 @@ def calc_marker_position(corners, marker_length, camera_data):
     rvecs, tvecs, _ = cv2.aruco.estimatePoseSingleMarkers(corners, marker_length, camera_data.mtx, camera_data.distortion)
     return rvecs, tvecs
 
-def calc_speed_in_Z_axis(destiny_folder, file_name, marker_z_positions, times_to_each_marker):
+def calc_speed_in_Z_axis(destiny_folder, file_name, marker_z_positions, times_to_each_marker, ids_wanted_markers):
     
     speeds = {}
     ids_markers = list(marker_z_positions.keys())
     
     for id_marker in ids_markers:
         speed = []
-        for i in range(1, len(marker_z_positions[id_marker])):
-            speed.append((marker_z_positions[id_marker][i] - marker_z_positions[id_marker][i-1])/(times_to_each_marker[id_marker][i] - times_to_each_marker[id_marker][i-1]))
-        speeds[id_marker] = cp.deepcopy(speed)
+        is_wanted = False
+        for desired_marker in ids_wanted_markers:
+            if id_marker == desired_marker:
+                is_wanted = True
+                break
+        if is_wanted:        
+            for i in range(1, len(marker_z_positions[id_marker])):
+                speed.append(abs( (marker_z_positions[id_marker][i] - marker_z_positions[id_marker][i-1])/(times_to_each_marker[id_marker][i] - times_to_each_marker[id_marker][i-1])))
+            speeds[id_marker] = cp.deepcopy(speed)
         
     save_as_pickle_data(speeds, destiny_folder, file_name)
      
