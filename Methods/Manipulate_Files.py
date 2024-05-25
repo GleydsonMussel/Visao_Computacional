@@ -67,3 +67,8 @@ def load_arucoParams(path_to_file):
     arucoParams.cornerRefinementMinAccuracy = arucoParamsDict['cornerRefinementMinAccuracy']
     
     return arucoParams
+
+def save_as_pickle_data(data, destiny_folder, file_name):
+    with open(destiny_folder+file_name, "wb") as arquivo:
+        pickle.dump(data, arquivo)
+        arquivo.close()

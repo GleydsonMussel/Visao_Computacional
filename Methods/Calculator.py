@@ -1,8 +1,7 @@
 import cv2
 import math
-import Methods.Drawer as Drawer
-import Methods.Manipulate_Files as Manip
-import Classes.CameraData as CameraData
+import copy as cp
+from Manipulate_Files import save_data, save_as_pickle_data
 
 # Calcula o ponto do centro da região de interesse
 def get_center_roi(x, w, y, h):
@@ -37,7 +36,7 @@ def calc_speed(x, y, w, h, cxant, cyant, iteracao, fps, distancia_acumulada_X, a
         caminhos = [caminho.split(" ")[0].replace("\n", "") for caminho in caminhos]
         arquivo.close()
     
-    [Manip.save_data(dado, caminho) for dado, caminho in zip(dados, caminhos)]
+    [save_data(dado, caminho) for dado, caminho in zip(dados, caminhos)]
     
     # Retorno
     return [distancia_acumulada_X, altura_acumulada]
@@ -72,13 +71,13 @@ def calc_speed_diagonal(x, y, w, h, cxant, cyant, iteracao, fps, distancia_acumu
         caminhos = [caminho.split(" ")[0].replace("\n", "") for caminho in caminhos]
         arquivo.close()
     
-    [Manip.save_data(dado, caminho) for dado, caminho in zip(dados, caminhos)]
+    [save_data(dado, caminho) for dado, caminho in zip(dados, caminhos)]
     
     # Retorno
     return [distancia_acumulada_X, altura_acumulada]
 
 # Calcula a posição do centro do marcador ArUco
-def calc_marker_positions(corners):
+def calc_marker_positions_x_y(corners):
     """
     Calcula as posições centrais dos marcadores ArUco detectados.
 
@@ -113,7 +112,19 @@ def calc_marker_position(corners, marker_length, camera_data):
     """
     rvecs, tvecs, _ = cv2.aruco.estimatePoseSingleMarkers(corners, marker_length, camera_data.mtx, camera_data.distortion)
     return rvecs, tvecs
+
+def calc_speed_in_Z_axis(destiny_folder, file_name, marker_z_positions, times_to_each_marker):
+    
+    speeds = {}
+    ids_markers = list(marker_z_positions.keys())
+    
+    for id_marker in ids_markers:
+        speed = []
+        for i in range(1, len(marker_z_positions[id_marker])):
+            speed.append((marker_z_positions[id_marker][i] - marker_z_positions[id_marker][i-1])/(times_to_each_marker[id_marker][i] - times_to_each_marker[id_marker][i-1]))
+        speeds[id_marker] = cp.deepcopy(speed)
         
+    save_as_pickle_data(speeds, destiny_folder, file_name)
      
 
 

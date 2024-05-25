@@ -1,5 +1,6 @@
 import cv2
 import numpy as np
+import pickle
 from Classes.CameraData import CameraData
 import Methods.Drawer as Drawer
 import Methods.Manipulate_Files as Manip
@@ -25,11 +26,24 @@ marker_used = "./ArUco/ArUco_Markers/marker_DICT_7X7_50_id_12.png"
 arucoDict = cv2.aruco.getPredefinedDictionary(cv2.aruco.DICT_7X7_50)
 
 # Tamanho do marcador em metros 
-marker_size = 0.105 # (Id 12 impresso)
+#marker_size = 0.105 # (Id 12 impresso)
 #marker_size = 0.08
-
+tempos = {
+    49:[],
+    0:[],
+    24:[],
+}
+marker_z_positions={
+    49:[],
+    0:[],
+    24:[],
+}
+posicoes_referencia={
+    49:9.47,
+    24:3.47
+}
 # Caminho para importar os dados da câmera utilizada
-dados_camera = CameraData('./Cameras_Data/celular_Gleydson2/coeficientes_2.npz')
+dados_camera = CameraData('./Cameras_Data/celular_Gleydson2/coeficientes_Zoom_2x.npz')
 
 # Se desejar aplicar a calibração de câmera, True, se não, False
 aplicaCalib = True
@@ -46,11 +60,10 @@ arucoParams = ArUco_Things.generate_detector_params(caminho_pasta_output)
 video = cv2.VideoCapture('./videos/Testes_ArUco/'+nome_video+extencao)
 alturaVideo = int(video.get(cv2.CAP_PROP_FRAME_HEIGHT)); 
 larguraVideo = int(video.get(cv2.CAP_PROP_FRAME_WIDTH))
-videoSaida = cv2.VideoWriter(caminho_pasta_output+nome_video+'_Output'+extencao, cv2.VideoWriter_fourcc('m', 'p', '4', 'v'), video.get(cv2.CAP_PROP_FPS), (larguraVideo, alturaVideo))
+fps = video.get(cv2.CAP_PROP_FPS)
+videoSaida = cv2.VideoWriter(caminho_pasta_output+nome_video+'_Output'+extencao, cv2.VideoWriter_fourcc('m', 'p', '4', 'v'), fps, (larguraVideo, alturaVideo))
  
-contFrame = 0    
-tempos = []   
-marker_z_positions = []                       
+contFrame = 0                          
 
 #-----------------Começo Processamento------------------
 while True:
@@ -83,23 +96,28 @@ while True:
         
         cv2.aruco.drawDetectedMarkers(frame, corners, ids)
         
-        # Obtem os vetores de rotação e translação da câmera
-        #rvecs, tvecs = Calculator.calc_marker_position(corners, marker_size, dados_camera)
-        rvecs, tvecs = [None, None]
-        
-        if rvecs is not None:
-            for rvec, tvec, id in zip(rvecs, tvecs, ids):
-                cv2.drawFrameAxes(frame, dados_camera.mtx, dados_camera.distortion, rvec, tvec, 0.1)
-                print(f"ID: {id[0]}")
-                print(f"Translation Vector (tvec): {tvec.flatten()}")
-                print(f"Position in Z: {tvec[0][2]} meters")
-                tempos.append(1/round(video.get(cv2.CAP_PROP_FPS)) * contFrame)
-                marker_z_positions.append(tvec[0][2])
-        
-        # Calcula a posição do centro do marcador ArUco
-        posicao = Calculator.calc_marker_positions(corners)
-        
-        print(posicao)
+        for corner, id in zip(corners, ids):    
+            if id[0] == 24:
+                marker_size = 0.105/2
+            else:
+                 marker_size = 0.105
+            # Obtem os vetores de rotação e translação da câmera
+            rvecs, tvecs = Calculator.calc_marker_position(corner, marker_size, dados_camera)
+            #rvecs, tvecs = [None, None]
+            
+            if rvecs is not None:
+                for rvec, tvec in zip(rvecs, tvecs):
+                    cv2.drawFrameAxes(frame, dados_camera.mtx, dados_camera.distortion, rvec, tvec, 0.1)
+                    print(f"ID: {id[0]}")
+                    print(f"Translation Vector (tvec): {tvec.flatten()}")
+                    print(f"Position in Z: {tvec[0][2]} meters")
+                    tempos[id[0]].append(1/round(video.get(cv2.CAP_PROP_FPS)) * contFrame)
+                    marker_z_positions[id[0]].append(tvec[0][2])
+            
+            # Calcula a posição do centro do marcador ArUco
+            posicao = Calculator.calc_marker_positions(corners)
+            
+            print(posicao)
     
     Drawer.write_on_video(frame, "Fps: "+str(round(video.get(cv2.CAP_PROP_FPS))),(0,25), (255,0,0))
     Drawer.write_on_video(frame, "Frame: "+str(contFrame),(0,60), (0,255,0))
@@ -125,13 +143,16 @@ while True:
     print("Li o frame: "+str(contFrame))
 
 #-----------------Fim do processamento------------------
-video.release(); cv2.destroyAllWindows() 
+video.release(); cv2.destroyAllWindows()
+duracao_video = contFrame/fps
 
-marker_z_positions_np_array = np.array(marker_z_positions)
+Calculator.calc_speed_in_Z_axis(caminho_pasta_output, "speed_markers.pkl", marker_z_positions, tempos)
+Manip.save_as_pickle_data(tempos, caminho_pasta_output, "times_to_each_marker.pkl")
+Manip.save_as_pickle_data(marker_z_positions, caminho_pasta_output, "markers_z_positions.pkl")
+Manip.save_as_pickle_data(posicoes_referencia, caminho_pasta_output, "reference_positions.pkl")
 
-np.save("./logs/Marker_z_Positions"+nome_video+".np", marker_z_positions_np_array)
-Plot.plot_graphic_with_direct_values(tempos, marker_z_positions, "Posicao em Z do Marcador x Tempo", "Tempo (s)", "Posicao (m)")
-
+Plot.plot_graphic_from_pickles_dicts(caminho_pasta_output+"Posicao_Z_x_Tempo", caminho_pasta_output+"times_to_each_marker.pkl", caminho_pasta_output+"markers_z_positions.pkl", "Posicao em Z do Marcador x Tempo", "Tempo (s)", "Posicao (m)", video_duration=duracao_video)
+Plot.plot_graphic_from_pickles_dicts(caminho_pasta_output+"Velocidade_em_Z_x_Tempo", caminho_pasta_output+"times_to_each_marker.pkl", caminho_pasta_output+"speed_markers.pkl", "Velocidade em Z do Marcador x Tempo", "Tempo (s)", "Velocidade (m/s)", video_duration=duracao_video)
 
    
 

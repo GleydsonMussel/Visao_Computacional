@@ -8,7 +8,7 @@ import Methods.Manipulate_Files as Manip
 import Methods.Calibration as Calib
 
 #-----------------------------PREENCHER-----------------------------------
-pathCoefficients = './Cameras_Data/celular_Gleydson2/coeficientes_2.npz'
+pathCoefficients = './Cameras_Data/celular_Gleydson2/coeficientes_Zoom_1x.npz'
 # Tamanho dos quadrados na vida real em m
 tamQuad = 0.025
 #--------------------------------------------------------------------------
