@@ -43,11 +43,25 @@ def create_folder(path_to_folder):
         os.mkdir(path_to_folder+"_take_"+str(cont))
         return path_to_folder+"_take_"+str(cont)+"/"
 
+def save_as_pickle_data(data, destiny_folder, file_name):
+    
+    # Se não receber a extenção .phl no nome, coloca aqui
+    if len(file_name.split(".")) == 1:
+        file_name = file_name+".pkl" 
+    
+    with open(destiny_folder+file_name, "wb") as arquivo:
+        pickle.dump(data, arquivo)
+        arquivo.close()
+        
+def load_pickle_data(path_to_data):
+    with open(path_to_data, 'rb') as arquivo:
+        data = pickle.load(arquivo)
+        arquivo.close()
+    return data
+
 def load_arucoParams(path_to_file):
     
-    with open(path_to_file, 'rb') as arquivo:
-        arucoParamsDict = pickle.load(arquivo)
-        arquivo.close()
+    arucoParamsDict = load_pickle_data(path_to_file)
     
     arucoParams = cv2.aruco.DetectorParameters()
     arucoParams.adaptiveThreshWinSizeMin = arucoParamsDict['adaptiveThreshWinSizeMin']
@@ -68,7 +82,4 @@ def load_arucoParams(path_to_file):
     
     return arucoParams
 
-def save_as_pickle_data(data, destiny_folder, file_name):
-    with open(destiny_folder+file_name, "wb") as arquivo:
-        pickle.dump(data, arquivo)
-        arquivo.close()
+

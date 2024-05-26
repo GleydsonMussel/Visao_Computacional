@@ -13,14 +13,14 @@ def generate_detector_params(caminho_pasta_output):
     arucoParams.maxMarkerPerimeterRate = 4.0                            # Padrão = 4.0 (%)
     arucoParams.perspectiveRemovePixelPerCell = 12                       # Padrão = 4 pixels
     arucoParams.perspectiveRemoveIgnoredMarginPerCell = 0.14            # Padrão = 0.13 (%)
-    arucoParams.maxErroneousBitsInBorderRate = 0.36                     # Padrão = 0.35 (%) 
-    arucoParams.errorCorrectionRate = 0.61                               # Padrão = 0.6 (%)   
+    arucoParams.maxErroneousBitsInBorderRate = 0.32                     # Padrão = 0.35 (%) 
+    arucoParams.errorCorrectionRate = 0.55                               # Padrão = 0.6 (%)   
 
     # REFINAMENTO DO DESENHO DO ARUCO
-    arucoParams.polygonalApproxAccuracyRate = 0.018                     # Padrão = 0.03 (pixels)
+    arucoParams.polygonalApproxAccuracyRate = 0.01                     # Padrão = 0.03 (pixels)
     arucoParams.cornerRefinementMethod = cv2.aruco.CORNER_REFINE_SUBPIX
-    arucoParams.cornerRefinementWinSize =  15                           # Padrão = 5 pixels
-    arucoParams.cornerRefinementMaxIterations = 60                      # Padrão = 30 iterações
+    arucoParams.cornerRefinementWinSize =  20                           # Padrão = 5 pixels
+    arucoParams.cornerRefinementMaxIterations = 70                      # Padrão = 30 iterações
     arucoParams.cornerRefinementMinAccuracy = 0.005                     # Padrão = 0.01 pixels
     
     arucoParamsDict = {
