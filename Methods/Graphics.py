@@ -4,7 +4,7 @@ import pickle
 import sys
 sys.path.append('./Methods/Manipulate_Files.py')
 sys.path.append('./Methods/Data_Cleaner.py')
-from Calculator import calc_speed_in_Z_axis
+from Calculator import calc_speed_in_any_axis
 from Data_Cleaner import clean_data
 from Manipulate_Files import load_pickle_data
 

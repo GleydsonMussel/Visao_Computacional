@@ -115,10 +115,10 @@ def calc_marker_position(corners, marker_length, camera_data):
     rvecs, tvecs, _ = cv2.aruco.estimatePoseSingleMarkers(corners, marker_length, camera_data.mtx, camera_data.distortion)
     return rvecs, tvecs
 
-def calc_speed_in_Z_axis(destiny_folder, file_name, marker_z_positions, times_to_each_marker, ids_wanted_markers):
+def calc_speed_in_any_axis(destiny_folder, file_name, marker_positions, times_to_each_marker, ids_wanted_markers, fatConvPxlToM=1):
     
     speeds = {}
-    ids_markers = list(marker_z_positions.keys())
+    ids_markers = list(marker_positions.keys())
     
     for id_marker in ids_markers:
         speed = []
@@ -128,11 +128,20 @@ def calc_speed_in_Z_axis(destiny_folder, file_name, marker_z_positions, times_to
                 is_wanted = True
                 break
         if is_wanted:        
-            for i in range(1, len(marker_z_positions[id_marker])):
-                speed.append(abs( (marker_z_positions[id_marker][i] - marker_z_positions[id_marker][i-1])/(times_to_each_marker[id_marker][i] - times_to_each_marker[id_marker][i-1])))
+            for i in range(1, len(marker_positions[id_marker])):
+                if fatConvPxlToM == 1:
+                    speed.append(fatConvPxlToM*abs((marker_positions[id_marker][i] - marker_positions[id_marker][i-1])/(times_to_each_marker[id_marker][i] - times_to_each_marker[id_marker][i-1])))
+                else:
+                    speed.append(fatConvPxlToM*((marker_positions[id_marker][i] - marker_positions[id_marker][i-1])/(times_to_each_marker[id_marker][i] - times_to_each_marker[id_marker][i-1])))
             speeds[id_marker] = cp.deepcopy(speed)
         
     save_as_pickle_data(speeds, destiny_folder, file_name)
+
+def calc_deslocamento_converted(dict_with_markers_positions, fatConvPxlToM):
+    for key in dict_with_markers_positions.keys():
+        dict_with_markers_positions[key] = [fatConvPxlToM*(pos-dict_with_markers_positions[key][0]) for pos in dict_with_markers_positions[key]]
+    return dict_with_markers_positions
+    
      
 
 

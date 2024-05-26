@@ -26,6 +26,9 @@ marker_used = "./ArUco/ArUco_Markers/marker_DICT_7X7_50_id_12.png"
 # Dicionário ArUco utilizado
 arucoDict = cv2.aruco.getPredefinedDictionary(cv2.aruco.DICT_7X7_50)
 
+# Fator de COnversão de pixel para m
+fatConvPxToM = 0.06
+
 # Tamanho do marcador em metros 
 #marker_size = 0.105 # (Id 12 impresso)
 #marker_size = 0.08
@@ -36,6 +39,16 @@ tempos = {
     24:[],
 }
 marker_z_positions={
+    49:[],
+    0:[],
+    24:[],
+}
+marker_x_positions={
+    49:[],
+    0:[],
+    24:[],
+}
+marker_y_positions={
     49:[],
     0:[],
     24:[],
@@ -118,9 +131,10 @@ while True:
                     marker_z_positions[id[0]].append(tvec[0][2])
             
             # Calcula a posição do centro do marcador ArUco
-            posicao = Calculator.calc_marker_positions_x_y(corners)
-            
-            print(posicao)
+            cx, cy = Calculator.calc_marker_positions_x_y(corners)
+            marker_x_positions[id[0]].append(cx)
+            marker_y_positions[id[0]].append(cy)
+            print((marker_x_positions[id[0]][-1], marker_y_positions[id[0]][-1]))
     
     Drawer.write_on_video(frame, "Fps: "+str(round(video.get(cv2.CAP_PROP_FPS))),(0,25), (255,0,0))
     Drawer.write_on_video(frame, "Frame: "+str(contFrame),(0,60), (0,255,0))
@@ -135,7 +149,7 @@ while True:
             j = cv2.waitKey(30)
             if j == ord('v'):
                 break
-            
+    # Habilita função de fechar o vídeo quando desejar      
     elif k == ord('q'):
         break
     
@@ -145,27 +159,62 @@ while True:
     
     print("Li o frame: "+str(contFrame))
 
-#-----------------Fim do processamento------------------
+#-----------------Fim do Processamento do Vídeo------------------
 video.release(); cv2.destroyAllWindows()
 duracao_video = contFrame/fps
 
-Calculator.calc_speed_in_Z_axis(caminho_pasta_output, "speed_markers.pkl", marker_z_positions, tempos, [49, 0, 24])
+# Calculando o deslocamento já convertendo de px para m
+marker_x_positions = Calculator.calc_deslocamento_converted(marker_x_positions, fatConvPxToM)
+marker_y_positions = Calculator.calc_deslocamento_converted(marker_y_positions, fatConvPxToM)
+
+# Cálculo das Velocidades
+Calculator.calc_speed_in_any_axis(caminho_pasta_output, "speed_markers_z.pkl", marker_z_positions, tempos, [49, 0, 24])
+Calculator.calc_speed_in_any_axis(caminho_pasta_output, "speed_markers_x.pkl", marker_x_positions, tempos, [49, 0, 24])
+Calculator.calc_speed_in_any_axis(caminho_pasta_output, "speed_markers_y.pkl", marker_y_positions, tempos, [49, 0, 24])
 
 # Salvando dados extraídos
 Manip.save_as_pickle_data(tempos, caminho_pasta_output, "times_to_each_marker.pkl")
 Manip.save_as_pickle_data(marker_z_positions, caminho_pasta_output, "markers_z_positions.pkl")
 Manip.save_as_pickle_data(posicoes_referencia, caminho_pasta_output, "reference_positions.pkl")
-
-# Limpando dados de Deslocamento e Velocidade
+Manip.save_as_pickle_data(marker_x_positions, caminho_pasta_output, "marker_x_positions.pkl")
+Manip.save_as_pickle_data(marker_y_positions, caminho_pasta_output, "marker_y_positions.pkl")
+ 
+# Primeira higiennização dos dados de Deslocamento e Velocidade
 Data_Cleaner.clean_data(caminho_pasta_output, "cleaned_markers_z_positions", caminho_pasta_output+"markers_z_positions.pkl", [49, 0, 24])
-Data_Cleaner.clean_data(caminho_pasta_output, "cleaned_speed_markers", caminho_pasta_output+"speed_markers.pkl", [49, 0, 24])
+Data_Cleaner.clean_data(caminho_pasta_output, "cleaned_speed_markers_z", caminho_pasta_output+"speed_markers_z.pkl", [49, 0, 24])
+Data_Cleaner.clean_data(caminho_pasta_output, "cleaned_marker_x_positions", caminho_pasta_output+"marker_x_positions.pkl", [49, 0, 24])
+Data_Cleaner.clean_data(caminho_pasta_output, "cleaned_speed_markers_x", caminho_pasta_output+"speed_markers_x.pkl", [49, 0, 24])
+Data_Cleaner.clean_data(caminho_pasta_output, "cleaned_marker_y_positions", caminho_pasta_output+"marker_y_positions.pkl", [49, 0, 24])
+Data_Cleaner.clean_data(caminho_pasta_output, "cleaned_speed_markers_y", caminho_pasta_output+"speed_markers_y.pkl", [49, 0, 24])
+
+# Segunda higiennização dos dados de Deslocamento e Velocidade
+marker_z_positions_cleaned = Manip.load_pickle_data(caminho_pasta_output+"cleaned_markers_z_positions.pkl")
+Calculator.calc_speed_in_any_axis(caminho_pasta_output, "speed_markers_with_clean_z_positions.pkl", marker_z_positions_cleaned, tempos, [49, 0, 24])
+Data_Cleaner.clean_data(caminho_pasta_output, "cleaned_speed_markers_with_clean_z_positions", caminho_pasta_output+"speed_markers_with_clean_z_positions.pkl", [49, 0, 24])
+
+marker_x_positions_cleaned = Manip.load_pickle_data(caminho_pasta_output+"cleaned_marker_x_positions.pkl")
+Calculator.calc_speed_in_any_axis(caminho_pasta_output, "speed_markers_with_clean_x_positions.pkl", marker_x_positions_cleaned, tempos, [49, 0, 24])
+Data_Cleaner.clean_data(caminho_pasta_output, "cleaned_speed_markers_with_clean_x_positions", caminho_pasta_output+"speed_markers_with_clean_x_positions.pkl", [49, 0, 24])
+
+marker_y_positions_cleaned = Manip.load_pickle_data(caminho_pasta_output+"cleaned_marker_y_positions.pkl")
+Calculator.calc_speed_in_any_axis(caminho_pasta_output, "speed_markers_with_clean_y_positions.pkl", marker_y_positions_cleaned, tempos, [49, 0, 24])
+Data_Cleaner.clean_data(caminho_pasta_output, "cleaned_speed_markers_with_clean_y_positions", caminho_pasta_output+"speed_markers_with_clean_y_positions.pkl", [49, 0, 24])
 
 # Plotando gráficos
 Plot.plot_graphic_from_pickles_dicts(caminho_pasta_output+"Posicao_Z_x_Tempo", caminho_pasta_output+"times_to_each_marker.pkl", caminho_pasta_output+"markers_z_positions.pkl", "Posicao em Z do Marcador x Tempo", "Tempo (s)", "Posicao (m)", video_duration=duracao_video, ids_wanted_markers=[49,0,24])
-Plot.plot_graphic_from_pickles_dicts(caminho_pasta_output+"Velocidade_em_Z_x_Tempo", caminho_pasta_output+"times_to_each_marker.pkl", caminho_pasta_output+"speed_markers.pkl", "Velocidade em Z do Marcador x Tempo", "Tempo (s)", "Velocidade (m/s)", video_duration=duracao_video, ids_wanted_markers=[0])
+Plot.plot_graphic_from_pickles_dicts(caminho_pasta_output+"Velocidade_em_Z_x_Tempo", caminho_pasta_output+"times_to_each_marker.pkl", caminho_pasta_output+"speed_markers_z.pkl", "Velocidade em Z do Marcador x Tempo", "Tempo (s)", "Velocidade (m/s)", video_duration=duracao_video, ids_wanted_markers=[0])
+Plot.plot_graphic_from_pickles_dicts(caminho_pasta_output+"Velocidade_em_Z_Tratatatatatada_x_Tempo", caminho_pasta_output+"times_to_each_marker.pkl", caminho_pasta_output+"cleaned_speed_markers_with_clean_z_positions.pkl", "Velocidade em Z Tratatatatatada x Tempo", "Tempo (s)", "Velocidade (m/s)", video_duration=duracao_video, ids_wanted_markers=[49,0,24])
+
 Plot.plot_graphic_from_pickles_dicts(caminho_pasta_output+"Posicao_Z_Tratada_x_Tempo", caminho_pasta_output+"times_to_each_marker.pkl", caminho_pasta_output+"cleaned_markers_z_positions.pkl", "Posicao em Z do Marcador x Tempo", "Tempo (s)", "Posicao (m)", video_duration=duracao_video, ids_wanted_markers=[49,0,24])
-Plot.plot_graphic_from_pickles_dicts(caminho_pasta_output+"Velocidade_em_Z_Tratada_x_Tempo", caminho_pasta_output+"times_to_each_marker.pkl", caminho_pasta_output+"cleaned_speed_markers.pkl", "Velocidade em Z do Marcador x Tempo", "Tempo (s)", "Velocidade (m/s)", video_duration=duracao_video, ids_wanted_markers=[0])
+Plot.plot_graphic_from_pickles_dicts(caminho_pasta_output+"Velocidade_em_Z_Tratada_x_Tempo", caminho_pasta_output+"times_to_each_marker.pkl", caminho_pasta_output+"cleaned_speed_markers_z.pkl", "Velocidade em Z do Marcador x Tempo", "Tempo (s)", "Velocidade (m/s)", video_duration=duracao_video, ids_wanted_markers=[0])
 
-   
+Plot.plot_graphic_from_pickles_dicts(caminho_pasta_output+"Deslocamento_em_X_x_Tempo", caminho_pasta_output+"times_to_each_marker.pkl", caminho_pasta_output+"marker_x_positions.pkl", "Deslocamento em X x Tempo", "Tempo (s)", "Posicao (m)", video_duration=duracao_video, ids_wanted_markers=[49,0,24])
+Plot.plot_graphic_from_pickles_dicts(caminho_pasta_output+"Deslocamento_em_Y_x_Tempo", caminho_pasta_output+"times_to_each_marker.pkl", caminho_pasta_output+"marker_y_positions.pkl", "Deslocamento em Y x Tempo", "Tempo (s)", "Posicao (m)", video_duration=duracao_video, ids_wanted_markers=[49,0,24])
 
+Plot.plot_graphic_from_pickles_dicts(caminho_pasta_output+"Deslocamento_em_X_Tratado_x_Tempo", caminho_pasta_output+"times_to_each_marker.pkl", caminho_pasta_output+"cleaned_marker_x_positions.pkl", "Deslocamento em X x Tempo", "Tempo (s)", "Posicao (m)", video_duration=duracao_video, ids_wanted_markers=[49,0,24])
+Plot.plot_graphic_from_pickles_dicts(caminho_pasta_output+"Deslocamento_em_Y_x_Tempo", caminho_pasta_output+"times_to_each_marker.pkl", caminho_pasta_output+"cleaned_marker_y_positions.pkl", "Deslocamento em Y x Tempo", "Tempo (s)", "Posicao (m)", video_duration=duracao_video, ids_wanted_markers=[49,0,24])
+
+Plot.plot_graphic_from_pickles_dicts(caminho_pasta_output+"Velocidade_em_X_x_Tempo", caminho_pasta_output+"times_to_each_marker.pkl", caminho_pasta_output+"speed_markers_x.pkl", "Velocidade em X x Tempo", "Tempo (s)", "Velocidade (m/s)", video_duration=duracao_video, ids_wanted_markers=[49,0,24])
+Plot.plot_graphic_from_pickles_dicts(caminho_pasta_output+"Velocidade_em_X_Tratada_x_Tempo", caminho_pasta_output+"times_to_each_marker.pkl", caminho_pasta_output+"cleaned_speed_markers_x.pkl", "Velocidade em X Tratada x Tempo", "Tempo (s)", "Velocidade (m/s)", video_duration=duracao_video, ids_wanted_markers=[49,0,24])
+Plot.plot_graphic_from_pickles_dicts(caminho_pasta_output+"Velocidade_em_X_Tratatatatatada_x_Tempo", caminho_pasta_output+"times_to_each_marker.pkl", caminho_pasta_output+"cleaned_speed_markers_with_clean_x_positions.pkl", "Velocidade em X Tratatatatatada x Tempo", "Tempo (s)", "Velocidade (m/s)", video_duration=duracao_video, ids_wanted_markers=[49,0,24])
 
