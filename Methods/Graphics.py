@@ -1,8 +1,11 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import pickle
+import sys
+sys.path.append('./Methods/Manipulate_Files.py')
+sys.path.append('./Methods/Data_Cleaner.py')
 from Calculator import calc_speed_in_Z_axis
-from Methods.Data_Cleaner import clean_data
+from Data_Cleaner import clean_data
 from Manipulate_Files import load_pickle_data
 
 # Formatação das fontes
@@ -108,15 +111,14 @@ def plot_graphic_from_pickles_dicts(path_to_save_figura, data_1_path, data_2_pat
     if limY != None:
         plt.ylim([limY[0], limY[1]])
     plt.savefig(path_to_save_figura)
+    plt.close()
 
-with open("./dados_extraidos/Teste_Arthur_2x_take_8/markers_z_positions.pkl", "rb") as file1, open("./dados_extraidos/Teste_Arthur_2x_take_8/times_to_each_marker.pkl", "rb") as file2:
-        marker_z_postions = pickle.load(file1)
-        tempos = pickle.load(file2)
-        file1.close()
-        file2.close()
+#with open("./dados_extraidos/Teste_Arthur_2x_take_8/markers_z_positions.pkl", "rb") as file1, open("./dados_extraidos/Teste_Arthur_2x_take_8/times_to_each_marker.pkl", "rb") as file2:
+ #       marker_z_postions = pickle.load(file1)
+  #      tempos = pickle.load(file2)
+   #     file1.close()
+    #    file2.close()
 #calc_speed_in_Z_axis("./dados_extraidos/Teste_Arthur_2x_take_8/", "speed_markers.pkl", marker_z_postions, tempos, [0])
 #clean_data("./dados_extraidos/Teste_Arthur_2x_take_8/", "cleaned_speed", "./dados_extraidos/Teste_Arthur_2x_take_8/speed_markers.pkl", [0])
-plot_graphic_from_pickles_dicts("./dados_extraidos/Teste_Arthur_2x_take_8/Velocidade_em_Z_x_Tempo_TRATADO.png", "./dados_extraidos/Teste_Arthur_2x_take_8/times_to_each_marker.pkl", "./dados_extraidos/Teste_Arthur_2x_take_8/cleaned_speed.pkl",  "Velocidade em Z Tratada do Marcador x Tempo", "Tempo (s)", "Velocidade (m/s)",video_duration=20, ids_wanted_markers=[0])
-    
-            
+#plot_graphic_from_pickles_dicts("./dados_extraidos/Teste_Arthur_2x_take_8/Velocidade_em_Z_x_Tempo_TRATADO.png", "./dados_extraidos/Teste_Arthur_2x_take_8/times_to_each_marker.pkl", "./dados_extraidos/Teste_Arthur_2x_take_8/cleaned_speed.pkl",  "Velocidade em Z Tratada do Marcador x Tempo", "Tempo (s)", "Velocidade (m/s)",video_duration=20, ids_wanted_markers=[0])
     

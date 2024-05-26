@@ -1,7 +1,8 @@
 import cv2
 import math
 import copy as cp
-import numpy as np
+import sys
+sys.path.append('./Methods/Manipulate_Files.py')
 from Manipulate_Files import save_data, save_as_pickle_data
 
 # Calcula o ponto do centro da região de interesse

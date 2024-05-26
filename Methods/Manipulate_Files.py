@@ -15,6 +15,17 @@ def create_folders():
     if not os.path.exists("./Calibration/Samples/"):
         os.mkdir("./Calibration/Samples/")
 
+def create_folder(path_to_folder):
+    if not os.path.exists(path_to_folder):
+        os.mkdir(path_to_folder)
+        return path_to_folder+"/"
+    else:
+        cont = 2
+        while os.path.exists(path_to_folder+"_take_"+str(cont)):
+            cont += 1
+        os.mkdir(path_to_folder+"_take_"+str(cont))
+        return path_to_folder+"_take_"+str(cont)+"/"
+
 def clean_folder(folder):
     for file in os.listdir(folder):
             os.remove(os.path.join(folder, file))
@@ -31,29 +42,15 @@ def clean_tracker_processing():
 def clean_calibrations_processing():
     dirs_to_clean = ['./Calibration/Res_Calib/', './Calibration/Samples/']
     [clean_folder(dir) for dir in dirs_to_clean]
-      
-def create_folder(path_to_folder):
-    if not os.path.exists(path_to_folder):
-        os.mkdir(path_to_folder)
-        return path_to_folder
-    else:
-        cont = 2
-        while os.path.exists(path_to_folder+"_take_"+str(cont)):
-            cont += 1
-        os.mkdir(path_to_folder+"_take_"+str(cont))
-        return path_to_folder+"_take_"+str(cont)+"/"
 
 def save_as_pickle_data(data, destiny_folder, file_name):
-    
-    # Se não receber a extenção .phl no nome, coloca aqui
-    if len(file_name.split(".")) == 1:
-        file_name = file_name+".pkl" 
     
     with open(destiny_folder+file_name, "wb") as arquivo:
         pickle.dump(data, arquivo)
         arquivo.close()
         
 def load_pickle_data(path_to_data):
+        
     with open(path_to_data, 'rb') as arquivo:
         data = pickle.load(arquivo)
         arquivo.close()
