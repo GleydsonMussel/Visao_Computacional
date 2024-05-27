@@ -73,15 +73,15 @@ def plot_friction_test(tempos, distsCru, distsPoli,title, batizaX, batizaY):
     plt.savefig("./graficos/"+title+".png")
         
 # Plotador Genérico
-def plot_graphic_with_direct_values(values_x_axis, values_y_axis, title, lgdX, lgdY, limX=None, limY=None):
-    plt.plot(values_x_axis, values_y_axis)
+def plot_graphic_with_direct_values(path_to_save_figura, values_x_axis, values_y_axis, title, lgdX, lgdY, limX=None, limY=None):
+    plt.plot(values_x_axis[0:len(values_y_axis)], values_y_axis)
     plt.title(title, fontdict=font_title); plt.xlabel(lgdX, fontdict=font_label); plt.ylabel(lgdY, fontdict=font_label)
     plt.grid()
     if limX != None:
         plt.xlim([limX[0], limX[1]])
     if limY != None:
         plt.ylim([limY[0], limY[1]]) 
-    plt.savefig("./graficos/"+title+".png")
+    plt.savefig(path_to_save_figura)
     plt.close()  
 
 def plot_graphic_from_pickles_dicts(path_to_save_figura, data_1_path, data_2_path, title, lgdX, lgdY, limX=None, limY=None, path_to_reference_positions = None, video_duration = None, ids_wanted_markers = None):
