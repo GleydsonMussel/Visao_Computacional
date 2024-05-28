@@ -1,6 +1,8 @@
 import os
 import pickle
 import cv2
+import glob
+import shutil
 
 # Cria pastas necessárias para o funcionamento do código
 def create_folders():
@@ -44,13 +46,11 @@ def clean_calibrations_processing():
     [clean_folder(dir) for dir in dirs_to_clean]
 
 def save_as_pickle_data(data, destiny_folder, file_name):
-    
     with open(destiny_folder+file_name, "wb") as arquivo:
         pickle.dump(data, arquivo)
         arquivo.close()
         
-def load_pickle_data(path_to_data):
-        
+def load_pickle_data(path_to_data): 
     with open(path_to_data, 'rb') as arquivo:
         data = pickle.load(arquivo)
         arquivo.close()
@@ -79,4 +79,28 @@ def load_arucoParams(path_to_file):
     
     return arucoParams
 
+def organize_aruco_proccessing_output_folder(path_to_folder):
+    
+    caminho_arquivos_pickle = path_to_folder+"Arquivos_Pickle"
+    caminho_arquivos_excel = path_to_folder+"Excel_Saga"
+    caminho_arquivos_graficos = path_to_folder+"Graficos"
+    
+    arquivo_pickle = glob.glob(path_to_folder+"*.pkl")
+    arquivo_excel = glob.glob(path_to_folder+"*.xlsx")
+    graficos = glob.glob(path_to_folder+"*.png")
+    
+    if not os.path.exists(caminho_arquivos_pickle):
+        os.mkdir(caminho_arquivos_pickle)
+    if not os.path.exists(caminho_arquivos_excel):
+        os.mkdir(caminho_arquivos_excel)
+    if not os.path.exists(caminho_arquivos_graficos):
+        os.mkdir(caminho_arquivos_graficos) 
+
+    [shutil.move(local_atual, caminho_arquivos_pickle) for local_atual in arquivo_pickle]
+    [shutil.move(local_atual, caminho_arquivos_excel) for local_atual in arquivo_excel]
+    [shutil.move(local_atual, caminho_arquivos_graficos) for local_atual in graficos]
+    
+    print("\nSaturday Night is a Good Night for Fighting\n")
+
+    
 
