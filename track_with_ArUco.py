@@ -59,7 +59,7 @@ posicoes_referencia={
 }
 
 # Caminho para importar os dados da câmera utilizada
-dados_camera = CameraData('./Cameras_Data/celular_Gleydson2/coeficientes_Zoom_2x.npz')
+dados_camera = CameraData('./Cameras_Data/celular_Gleydson2/coeficientes_Zoom_2x_Teste_2.npz')
 
 # Se desejar aplicar a calibração de câmera, True, se não, False
 aplicaCalib = True
