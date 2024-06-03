@@ -34,7 +34,7 @@ def get_dados(caminho_dado):
     return dados 
     
 # Plotador Genérico
-def plot_graphic(path_data_1, path_data_2, title, lgdX, lgdY, limX=None, limY=None):
+def plot_graphic(path_data_1, path_data_2, title, lgdX, lgdY, limX=None, limY=None, pasta_output=""):
     dado1=get_dados(path_data_1); dado2 = get_dados(path_data_2)
     plt.plot(dado1, dado2)
     plt.title(title, fontdict=font_title); plt.xlabel(lgdX, fontdict=font_label); plt.ylabel(lgdY, fontdict=font_label)
@@ -43,7 +43,7 @@ def plot_graphic(path_data_1, path_data_2, title, lgdX, lgdY, limX=None, limY=No
         plt.xlim([limX[0], limX[1]])
     if limY != None:
         plt.ylim([limY[0], limY[1]]) 
-    plt.savefig("./graficos/"+title+".png")
+    plt.savefig(pasta_output+title+".png")
     plt.close()
 
 # Plotador Genérico para a interpolação do dado passado

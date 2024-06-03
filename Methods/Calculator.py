@@ -2,14 +2,14 @@ import cv2
 import math
 import copy as cp
 import sys
-sys.path.append('./Methods/Manipulate_Files.py')
+sys.path.append('./Methods')
 from Manipulate_Files import save_data, save_as_pickle_data
 
 # Calcula o ponto do centro da região de interesse
 def get_center_roi(x, w, y, h):
     return [int(x+w/2), int(y+h/2)]
 
-def calc_speed(x, y, w, h, cxant, cyant, iteracao, fps, distancia_acumulada_X, altura_acumulada, fatConvPxM):
+def calc_speed(x, y, w, h, cxant, cyant, iteracao, fps, distancia_acumulada_X, altura_acumulada, fatConvPxM, pasta_output):
     # Pega o centro atualizado da região de interesse
     cx, cy = get_center_roi(x,w,y,h)
 
@@ -38,12 +38,12 @@ def calc_speed(x, y, w, h, cxant, cyant, iteracao, fps, distancia_acumulada_X, a
         caminhos = [caminho.split(" ")[0].replace("\n", "") for caminho in caminhos]
         arquivo.close()
     
-    [save_data(dado, caminho) for dado, caminho in zip(dados, caminhos)]
+    [save_data(dado, pasta_output+caminho) for dado, caminho in zip(dados, caminhos)]
     
     # Retorno
     return [distancia_acumulada_X, altura_acumulada]
 
-def calc_speed_diagonal(x, y, w, h, cxant, cyant, iteracao, fps, distancia_acumulada_X, altura_acumulada, fatConvPxM):
+def calc_speed_diagonal(x, y, w, h, cxant, cyant, iteracao, fps, distancia_acumulada_X, altura_acumulada, fatConvPxM, pasta_output):
     # Pega o centro atualizado da região de interesse
     cx, cy = get_center_roi(x,w,y,h)
 
@@ -73,7 +73,7 @@ def calc_speed_diagonal(x, y, w, h, cxant, cyant, iteracao, fps, distancia_acumu
         caminhos = [caminho.split(" ")[0].replace("\n", "") for caminho in caminhos]
         arquivo.close()
     
-    [save_data(dado, caminho) for dado, caminho in zip(dados, caminhos)]
+    [save_data(dado, pasta_output+caminho) for dado, caminho in zip(dados, caminhos)]
     
     # Retorno
     return [distancia_acumulada_X, altura_acumulada]
