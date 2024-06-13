@@ -18,7 +18,7 @@ Manip.clean_tracker_processing()
 #-----------------------------PREENCHER-----------------------------------
 
 # SETAR NOME VÍDEO
-nome_video = 'Teste_Arthur_2x'; extencao = '.mp4'
+nome_video = 'Voo1_2024_EDITADO'; extencao = '.mp4'
 
 # Setar o aruko utilizado
 marker_used = "./ArUco/ArUco_Markers/marker_DICT_7X7_50_id_12.png"
@@ -59,7 +59,11 @@ posicoes_referencia={
 }
 
 # Caminho para importar os dados da câmera utilizada
+<<<<<<< HEAD
 dados_camera = CameraData('./Cameras_Data/celular_Gleydson2/coeficientes_Zoom_2x_Teste_2.npz')
+=======
+dados_camera = CameraData('./Cameras_Data/celular_Gleydson2/coeficientes_Zoom_1x.npz')
+>>>>>>> cbb127b8dea125c7cdb8218c110466f6ba84bff2
 
 # Se desejar aplicar a calibração de câmera, True, se não, False
 aplicaCalib = True
@@ -108,7 +112,7 @@ while True:
     frame = cv2.cvtColor(frame, cv2.COLOR_GRAY2RGB)
     
     # Se há uma região de interesse para o rastreador rastrear
-    if corners is not None:
+    if len(corners) != 0:
         
         cv2.aruco.drawDetectedMarkers(frame, corners, ids)
         
