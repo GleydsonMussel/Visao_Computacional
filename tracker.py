@@ -15,13 +15,13 @@ Manip.clean_tracker_processing()
 #-----------------------------PREENCHER-----------------------------------
 
 # SETAR NOME VÍDEO
-nome_video = 'Voo1_2024_EDITADO'; extencao = '.mp4'
+nome_video = 'Voo9Editado'; extencao = '.mp4'
 
 # Caminho para importar os dados da câmera utilizada
 dados_camera = CameraData('./Cameras_Data/celular_Gleydson2/coeficientes_Zoom_1x.npz')
 
 # SETAR O VALOR DO FATOR DE CONVERSÃO
-fatConvPxM = 0.26/40
+fatConvPxM = 3/660
 
 # Se desejar aplicar a calibração de câmera, True, se não, False
 aplicaCalib = True
@@ -32,19 +32,18 @@ aplicaCalib = True
 caminho_pasta_output = "./dados_extraidos/"+nome_video
 caminho_pasta_output = Manip.create_folder(caminho_pasta_output)
 
-
 # Lista de trackers disponíveis
 trackers = {
-    'csrt' : cv2.legacy.TrackerCSRT_create,  # hight accuracy ,slow
-    'mosse' : cv2.legacy.TrackerMOSSE_create,  # fast, low accuracy
-    'kcf' : cv2.legacy.TrackerKCF_create,   # moderate accuracy and speed
-    'medianflow' : cv2.legacy.TrackerMedianFlow_create,
-    'mil' : cv2.legacy.TrackerMIL_create,
-    'tld' : cv2.legacy.TrackerTLD_create,
-    'boosting' : cv2.legacy.TrackerBoosting_create
+    'csrt' : cv2.legacy.TrackerCSRT.create(),  # hight accuracy ,slow
+    'mosse' : cv2.legacy.TrackerMOSSE.create(),  # fast, low accuracy
+    'kcf' : cv2.legacy.TrackerKCF.create(),   # moderate accuracy and speed
+    'medianflow' : cv2.legacy.TrackerMedianFlow.create(),
+    'mil' : cv2.legacy.TrackerMIL.create(),
+    'tld' : cv2.legacy.TrackerTLD.create(),
+    'boosting' : cv2.legacy.TrackerBoosting.create()
 }
 tracker_key = 'csrt'
-tracker = trackers[tracker_key]()
+tracker = trackers[tracker_key]
 
 video = cv2.VideoCapture('./videos/Voos/'+nome_video+extencao)
 alturaVideo = int(video.get(cv2.CAP_PROP_FRAME_HEIGHT)); 
@@ -89,21 +88,27 @@ while True:
     
     Drawer.write_on_video(frame, "Fps: "+str(round(video.get(cv2.CAP_PROP_FPS))),(0,25), (255,0,0))
     Drawer.write_on_video(frame, "Frame: "+str(contFrame),(0,60), (0,255,0))
+    Drawer.write_on_video(frame, "Tempo: "+str(round(contFrame/round(video.get(cv2.CAP_PROP_FPS)), 2)),(0,95), (0,0,255))
      
     cv2.imshow('Rastreando',frame)   
     
     k = cv2.waitKey(30)
     
-    if k == ord('s') or contFrame==0:
+    if k == ord('s'):
         
         # Inicializando selecionando com o mouse
-        #roi = cv2.selectROI('Rastreando',frame)
+        roi = cv2.selectROI('Rastreando',frame)
         # Inicializando por coordenada
-        roi = (85, 556, 65, 47)
+        #roi = 
         
         # Inicializa o tracker no frame no qual se selecionou a roi
         tracker.init(frame,roi)
         Manip.save_data(roi, caminho_pasta_output+"roi.txt")
+        
+        # Atualização do Rastreador
+        x,y,w,h = [int(c) for c in tracker.update(frame)[1]]
+        cx, cy = Calculator.get_center_roi(x,w,y,h)
+        Drawer.draw_roi(frame, x, w, y, h, cx, cy)
     
     # Habilita dar pause no vídeo
     elif k == ord('p'):

@@ -3,6 +3,7 @@ import math
 import copy as cp
 import sys
 sys.path.append('./Methods')
+import numpy as np
 from Manipulate_Files import save_data, save_as_pickle_data
 
 # Calcula o ponto do centro da região de interesse
@@ -114,7 +115,7 @@ def calc_marker_position(corners, marker_length, camera_data):
     rvecs, tvecs, _ = cv2.aruco.estimatePoseSingleMarkers(corners, marker_length, camera_data.mtx, camera_data.distortion)
     return rvecs, tvecs
 
-def calc_speed_in_any_axis(destiny_folder, file_name, marker_positions, times_to_each_marker, ids_wanted_markers, fatConvPxlToM=1):
+def calc_speed_ArUco(destiny_folder, file_name, marker_positions, times_to_each_marker, ids_wanted_markers):
     
     speeds = {}
     ids_markers = list(marker_positions.keys())
@@ -128,10 +129,32 @@ def calc_speed_in_any_axis(destiny_folder, file_name, marker_positions, times_to
                 break
         if is_wanted:        
             for i in range(1, len(marker_positions[id_marker])):
-                if fatConvPxlToM == 1:
-                    speed.append(fatConvPxlToM*abs((marker_positions[id_marker][i] - marker_positions[id_marker][i-1])/(times_to_each_marker[id_marker][i] - times_to_each_marker[id_marker][i-1])))
-                else:
-                    speed.append(fatConvPxlToM*((marker_positions[id_marker][i] - marker_positions[id_marker][i-1])/(times_to_each_marker[id_marker][i] - times_to_each_marker[id_marker][i-1])))
+                speed.append(abs((marker_positions[id_marker][i] - marker_positions[id_marker][i-1])/(times_to_each_marker[id_marker][i] - times_to_each_marker[id_marker][i-1])))
+                #speed.append(fatConvPxlToM*((marker_positions[id_marker][i] - marker_positions[id_marker][i-1])/(times_to_each_marker[id_marker][i] - times_to_each_marker[id_marker][i-1])))
+                 
+            speeds[id_marker] = cp.deepcopy(speed)
+        
+    save_as_pickle_data(speeds, destiny_folder, file_name)
+    
+def calc_speed_ArUco_Diagonal(destiny_folder, file_name, marker_positions_x, marker_positions_y,times_to_each_marker, ids_wanted_markers):
+    
+    speeds = {}
+    ids_markers = list(marker_positions_x.keys())
+    
+    for id_marker in ids_markers:
+        speed = []
+        is_wanted = False
+        for desired_marker in ids_wanted_markers:
+            if id_marker == desired_marker:
+                is_wanted = True
+                break
+        if is_wanted:        
+            for i in range(1, len(marker_positions_x[id_marker])):
+                deslocamento_x = (marker_positions_x[id_marker][i] - marker_positions_x[id_marker][i-1])
+                deslocamento_y = (marker_positions_y[id_marker][i] - marker_positions_y[id_marker][i-1])
+                deslocamento_total = np.sqrt(deslocamento_x**2 + deslocamento_y**2)
+                speed.append(deslocamento_total/(times_to_each_marker[id_marker][i] - times_to_each_marker[id_marker][i-1]))
+                #speed.append(fatConvPxlToM*((marker_positions[id_marker][i] - marker_positions[id_marker][i-1])/(times_to_each_marker[id_marker][i] - times_to_each_marker[id_marker][i-1])))
             speeds[id_marker] = cp.deepcopy(speed)
         
     save_as_pickle_data(speeds, destiny_folder, file_name)
