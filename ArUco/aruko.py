@@ -45,9 +45,9 @@ ARUCO_DICT = {
 }
 
 # ID do marcador a ser gerado
-marker_id = 25
+marker_id = 11
 # Tamanho do marcador em pixel
-marker_size = 500
+marker_size = 200
 # Dicionário a ser utilizado
 dict_to_use = "DICT_7X7_50"
 
@@ -56,7 +56,7 @@ marker = generate_aruco_marker(marker_id, ARUCO_DICT[dict_to_use], marker_size)
 
 # Salva o marcador como uma imagem
 if marker is not None:
-    cv2.imwrite(f'./ArUco/ArUco_Markers/marker_{dict_to_use}_id_{marker_id}.png', marker)
+    cv2.imwrite(f'./ArUco/ArUco_Markers/marker_{dict_to_use}_id_{marker_id}_size_{marker_size}.png', marker)
 
 # Exibe o marcador ArUco
 display_aruco_marker(marker)
