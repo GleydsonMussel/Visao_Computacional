@@ -29,7 +29,7 @@ aplicaCalib = True
 #--------------------------------------------------------------------------
 
 # Cria pasta para exportar os dados necessários para a realização dessa análise
-caminho_pasta_output = "./dados_extraidos/"+nome_video
+caminho_pasta_output = "./dados_extraidos/"+nome_video+"_Tracker"
 caminho_pasta_output = Manip.create_folder(caminho_pasta_output)
 
 # Lista de trackers disponíveis
