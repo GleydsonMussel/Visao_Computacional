@@ -1,7 +1,7 @@
 import cv2
 import pickle
 
-def generate_detector_params(caminho_pasta_output):
+def generate_detector_params(caminho_pasta_output=None):
     
     arucoParams = cv2.aruco.DetectorParameters()
 
@@ -61,8 +61,9 @@ def generate_detector_params(caminho_pasta_output):
     }
     
     # Salvando os parâmetros usando pickle
-    with open(caminho_pasta_output+"arucoParams.pkl", 'wb') as arquivo:
-        pickle.dump(arucoParamsDict, arquivo)
-        arquivo.close()
+    if caminho_pasta_output != None:
+        with open(caminho_pasta_output+"arucoParams.pkl", 'wb') as arquivo:
+            pickle.dump(arucoParamsDict, arquivo)
+            arquivo.close()
     
     return arucoParams

@@ -11,7 +11,7 @@ Manip.clean_calibrations_processing()
 # Parâmetros para fazer o barulho de quando um frame é salvo
 frequency = 2000 ; duration = 300; cont = 0  
 
-video = cv2.VideoCapture("C:/Users/gmuss/Downloads/PXL_20240602_195534841.mp4")
+video = cv2.VideoCapture("C:/Users/gmuss/OneDrive/Documents/GitHub/Visao_Computacional_2/videos/Testes_ArUco/Calibracao_ChArUco.mp4")
 
 while True:
 
