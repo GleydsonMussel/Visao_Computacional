@@ -42,6 +42,7 @@ dados_camera = CameraData('./Cameras_Data/celular_Gleydson2/testeCharuco.npz')
 
 # Se desejar aplicar a calibração de câmera, True, se não, False
 aplicaCalib = True
+ChArUco = True
 
 # Determina se o processamento será feito considerando o deslocamento do objeto na diagonal ou na horizontal
 NORMAL = False
@@ -82,8 +83,8 @@ while True:
     
     # Caso se deseje aplicar a calibração
     if aplicaCalib:
-        frame = Calibration.aply_calib(frame, dados_camera)
-        Manip.save_data(frame, './frames/frameCALIB_'+str(contFrame)+'.png')
+        frame = Calibration.aply_calib(frame, dados_camera, ChArUco)
+        cv2.imwrite('./frames/frameCALIB_'+str(contFrame)+'.png', frame)
     
     # Converte para cinza para melhor detecção
     frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)

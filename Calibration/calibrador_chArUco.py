@@ -10,8 +10,8 @@ import ArUco_Things
 
 squares_x = 11  # Número de quadrados na direção x
 squares_y = 9  # Número de quadrados na direção y
-square_length = 0.022  # Comprimento dos quadrados em metros
-marker_length = 0.011  # Comprimento das marcas Aruco em metros
+square_length = 0.0225  # Comprimento dos quadrados em metros
+marker_length = 0.01125  # Comprimento das marcas Aruco em metros
 MARGIN_PX = 20    # Tamanho da Margem do Marcador em pixel
 
 dicionario_desejado = "DICT_6X6_1000"
@@ -99,7 +99,7 @@ if len(all_charuco_corners) > 0 and len(all_charuco_ids) > 0:
         newcameramtx, roi = cv2.getOptimalNewCameraMatrix(camera_matrix, dist_coeffs, (w, h), 1, (w, h))
 
         # Save calibration data
-        np.savez(pathCoeficients, distortion=dist_coeffs, camera=camera_matrix, new_camera=newcameramtx)
+        np.savez(pathCoeficients, distortion=dist_coeffs, camera=camera_matrix, new_camera=newcameramtx, roi = roi)
 
         # Estimativa do erro de reprojeção
         total_error = 0
@@ -109,12 +109,13 @@ if len(all_charuco_corners) > 0 and len(all_charuco_ids) > 0:
                 
         # Iterate through displaying all the images
         for image_file in image_files:
-            print(f'Processando Imagem {image_file.split("/")[-1]}')
             image = cv2.imread(image_file)
-            undistorted_image = cv2.undistort(image, camera_matrix, dist_coeffs, None, newcameramtx)
+            undistorted_image = cv2.undistort(image, camera_matrix, dist_coeffs, roi, newcameramtx)
+            x, y, w, h = roi
+            undistorted_image = undistorted_image[y:y+h, x:x+w]
             cv2.imshow('Imagem sem Distorcao', undistorted_image)
             
-            k = cv2.waitKey(0)
+            k = cv2.waitKey(100)
             
 
         cv2.destroyAllWindows()

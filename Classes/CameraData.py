@@ -6,3 +6,4 @@ class CameraData:
         self.distortion = dadosCalib['distortion']
         self.mtx = dadosCalib['camera']; 
         self.newCameraMtx = dadosCalib['new_camera']
+        self.roi = dadosCalib['roi']

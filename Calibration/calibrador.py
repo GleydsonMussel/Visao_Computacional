@@ -90,7 +90,7 @@ h,  w = gray.shape[:2]
 # Refina a matrix dos coeficientes de distorção
 newcameramtx, roi = cv2.getOptimalNewCameraMatrix(mtx, dist, (w,h), 0, (w,h))
 
-np.savez(pathCoefficients, distortion=dist, camera=mtx, new_camera = newcameramtx)
+np.savez(pathCoefficients, distortion=dist, camera=mtx, new_camera = newcameramtx, roi = roi)
 
 incerteza = 0
 

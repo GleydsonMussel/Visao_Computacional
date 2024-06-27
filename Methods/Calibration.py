@@ -3,8 +3,13 @@ import numpy as np
 import glob
 import Cameras_Data
 
-def aply_calib(frame, camera_data):
-    clean_frame = cv2.undistort(frame, camera_data.mtx, camera_data.distortion, None, camera_data.newCameraMtx)
+def aply_calib(frame, camera_data, charuco = False):
+    if charuco:
+        clean_frame = cv2.undistort(frame, camera_data.mtx, camera_data.distortion, camera_data.roi, camera_data.newCameraMtx)
+        x, y, w, h = camera_data.roi
+        return clean_frame[y:y+h, x:x+w]
+    else:
+        clean_frame = cv2.undistort(frame, camera_data.mtx, camera_data.distortion, None, camera_data.newCameraMtx)
     return clean_frame
 
 def test_calibration(pathCoefficients, mtx, dist):
