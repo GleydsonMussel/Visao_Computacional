@@ -18,14 +18,14 @@ Manip.clean_tracker_processing()
 #-----------------------------PREENCHER-----------------------------------
 
 # SETAR NOME VÍDEO
-nome_video = 'Voo9Editado'; extencao = '.mp4'
+nome_video = '90cm'; extencao = '.mp4'
 
 # Dicionário ArUco utilizado (apenas para referencia do dicionário utilizado)
 arucoDict = cv2.aruco.getPredefinedDictionary(cv2.aruco.DICT_7X7_50)
 
 # Fator de COnversão de pixel para m
-fatConvPxToM = 3/660 # Xadrez
-fatConvPxToM = 3/596
+fatConvPxToM = 3/660 # Xadrez voo 9
+fatConvPxToM = 3/596# ChArUco voo 9
 
 # Tamanho do marcador em metros 
 marker_size = 0.119 # (Id 37 impresso)
@@ -39,11 +39,13 @@ posicoes_referencia={
 }
 
 # Caminho para importar os dados da câmera utilizada
-dados_camera = CameraData('./Cameras_Data/celular_Gleydson2/testeCharuco.npz')
+dados_camera = CameraData('./Cameras_Data/celular_Gleydson2/coeficientes_Zoom_1x.npz')
 
 # Se desejar aplicar a calibração de câmera, True, se não, False
 aplicaCalib = True
-ChArUco = True
+
+# Define se os coeficientes foram obtidos pela calibração usando tabuleiro de xadrez ou ChArUco 
+ChArUco = False
 
 # Determina se o processamento será feito considerando o deslocamento do objeto na diagonal ou na horizontal
 NORMAL = False
@@ -63,7 +65,7 @@ caminho_pasta_output = Manip.create_folder(caminho_pasta_output)
 # Cria os parâmetros para o ArUco
 arucoParams = ArUco_Things.generate_detector_params(caminho_pasta_output)
 
-video = cv2.VideoCapture('./videos/Voos/'+nome_video+extencao)
+video = cv2.VideoCapture('./videos/Testes_ArUco/'+nome_video+extencao)
 alturaVideo = int(video.get(cv2.CAP_PROP_FRAME_HEIGHT)); 
 larguraVideo = int(video.get(cv2.CAP_PROP_FRAME_WIDTH))
 fps = video.get(cv2.CAP_PROP_FPS)
@@ -168,17 +170,15 @@ marker_y_positions = Calculator.calc_deslocamento_converted(marker_y_positions, 
 Calculator.calc_speed_ArUco(caminho_pasta_output, "speed_markers_z.pkl", marker_z_positions, tempos, ids_desejados)
 
 if NORMAL:
-    Calculator.calc_speed_ArUco_Diagonal(caminho_pasta_output, "speed_markers_x.pkl", marker_x_positions, tempos, ids_desejados)
-    Calculator.calc_speed_ArUco_Diagonal(caminho_pasta_output, "speed_markers_y.pkl", marker_y_positions, tempos, ids_desejados)
+    Calculator.calc_speed_ArUco(caminho_pasta_output, "speed_markers_x.pkl", marker_x_positions, tempos, ids_desejados)
+    Calculator.calc_speed_ArUco(caminho_pasta_output, "speed_markers_y.pkl", marker_y_positions, tempos, ids_desejados)
 else:
     Calculator.calc_speed_ArUco_Diagonal(caminho_pasta_output, "speed_markers_x.pkl", marker_x_positions, marker_y_positions, tempos, ids_desejados)
 
 # Salvando dados extraídos
-Manip.save_as_pickle_data(tempos, caminho_pasta_output, "times_to_each_marker.pkl")
-Manip.save_as_pickle_data(marker_x_positions, caminho_pasta_output, "marker_x_positions.pkl")
-Manip.save_as_pickle_data(marker_y_positions, caminho_pasta_output, "marker_y_positions.pkl")
-Manip.save_as_pickle_data(marker_z_positions, caminho_pasta_output, "markers_z_positions.pkl")
-Manip.save_as_pickle_data(posicoes_referencia, caminho_pasta_output, "reference_positions.pkl")
+dados_salvar = [tempos, marker_x_positions, marker_y_positions, marker_z_positions, posicoes_referencia]
+nomes_arquivos = ["times_to_each_marker.pkl", "marker_x_positions.pkl", "marker_y_positions.pkl", "markers_z_positions.pkl", "reference_positions.pkl"]
+[Manip.save_as_pickle_data(dado, caminho_pasta_output,caminho) for dado, caminho in zip(dados_salvar, nomes_arquivos)]
 
 # PRIMEIRA HIGIENIZAÇÃO dos dados de Deslocamento e Velocidade
 Data_Cleaner.clean_data(caminho_pasta_output, "cleaned_marker_x_positions", caminho_pasta_output+"marker_x_positions.pkl", ids_desejados)
@@ -229,8 +229,5 @@ Plot.plot_graphic_from_pickles_dicts(caminho_pasta_output+"Velocidade_em_Z_Trata
 
 Plot.plot_graphic_from_pickles_dicts(caminho_pasta_output+"Posicao_Z_Tratada_x_Tempo", caminho_pasta_output+"times_to_each_marker.pkl", caminho_pasta_output+"cleaned_markers_z_positions.pkl", "Posicao em Z do Marcador x Tempo", "Tempo (s)", "Posicao (m)", video_duration=duracao_video, ids_wanted_markers=ids_desejados)
 Plot.plot_graphic_from_pickles_dicts(caminho_pasta_output+"Velocidade_em_Z_Tratada_x_Tempo", caminho_pasta_output+"times_to_each_marker.pkl", caminho_pasta_output+"cleaned_speed_markers_z.pkl", "Velocidade em Z do Marcador x Tempo", "Tempo (s)", "Velocidade (m/s)", video_duration=duracao_video, ids_wanted_markers=ids_desejados)
-
-
-
 
 Manip.organize_aruco_proccessing_output_folder(caminho_pasta_output)

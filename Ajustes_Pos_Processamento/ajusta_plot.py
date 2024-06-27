@@ -27,17 +27,24 @@ font_lgd={
 }
 
 posicoes = {}
-posicoes["charuco"] = load_pickle_data("./Ajustes_Pos_Processamento/Marcador_Z_CHARUCO.pkl")[37]
-posicoes["xadrez"] = load_pickle_data("./Ajustes_Pos_Processamento/Marcador_Z_XADREZ.pkl")[37]
-tempo = load_pickle_data("./Ajustes_Pos_Processamento/Tempo.pkl")[37]
+posicoes["charuco"] = load_pickle_data("./Ajustes_Pos_Processamento/markers_z_positions_90cm_CHARUCO.pkl")[37]
+posicoes["xadrez"] = load_pickle_data("./Ajustes_Pos_Processamento/markers_z_positions_90cm_XADREZ.pkl")[37]
+posicoes["xadrez"] = [dado for dado in posicoes["xadrez"] if dado < 2]
+tempo = load_pickle_data("./Ajustes_Pos_Processamento/times_to_each_marker.pkl")[37]
+posicao_ref = []
+for i in range(len(tempo)):
+    posicao_ref.append(0.9)
+    
 print(len(posicoes["charuco"]))
 
 #plot_graphic_with_direct_values("./Ajustes_Pos_Processamento/Comparativo_Posicoes_Z", tempo, posicoes, "Posicao em Z x Tempo", "Tempo (s)", "Posicao (m)")
 
 plt.plot(tempo, posicoes["charuco"][0:len(tempo)], label="37 ChArUco")
 plt.plot(tempo[0:len(posicoes["xadrez"])], posicoes["xadrez"][0:len(tempo)], label="37 Xadrez")
+plt.plot(tempo, posicao_ref, label="Posição Real")
+
 plt.title("Posicao em Z x Tempo", fontdict=font_title); plt.xlabel("Tempo (s)", fontdict=font_label); plt.ylabel("Posicao (m)", fontdict=font_label)
 plt.grid()
 plt.legend()
-plt.savefig("./Ajustes_Pos_Processamento/Comparativo.png")
+plt.savefig("./Ajustes_Pos_Processamento/Comparativo_2.png")
 plt.close() 

@@ -129,8 +129,9 @@ def calc_speed_ArUco(destiny_folder, file_name, marker_positions, times_to_each_
                 break
         if is_wanted:        
             for i in range(1, len(marker_positions[id_marker])):
-                speed.append(abs((marker_positions[id_marker][i] - marker_positions[id_marker][i-1])/(times_to_each_marker[id_marker][i] - times_to_each_marker[id_marker][i-1])))
-                #speed.append(fatConvPxlToM*((marker_positions[id_marker][i] - marker_positions[id_marker][i-1])/(times_to_each_marker[id_marker][i] - times_to_each_marker[id_marker][i-1])))
+                if (times_to_each_marker[id_marker][i] - times_to_each_marker[id_marker][i-1]) > 0:
+                    speed.append(abs((marker_positions[id_marker][i] - marker_positions[id_marker][i-1])/(times_to_each_marker[id_marker][i] - times_to_each_marker[id_marker][i-1])))
+                    #speed.append(fatConvPxlToM*((marker_positions[id_marker][i] - marker_positions[id_marker][i-1])/(times_to_each_marker[id_marker][i] - times_to_each_marker[id_marker][i-1])))
                  
             speeds[id_marker] = cp.deepcopy(speed)
         
