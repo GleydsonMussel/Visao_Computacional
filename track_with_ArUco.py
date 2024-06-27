@@ -24,7 +24,8 @@ nome_video = 'Voo9Editado'; extencao = '.mp4'
 arucoDict = cv2.aruco.getPredefinedDictionary(cv2.aruco.DICT_7X7_50)
 
 # Fator de COnversão de pixel para m
-fatConvPxToM = 3/660
+fatConvPxToM = 3/660 # Xadrez
+fatConvPxToM = 3/596
 
 # Tamanho do marcador em metros 
 marker_size = 0.119 # (Id 37 impresso)

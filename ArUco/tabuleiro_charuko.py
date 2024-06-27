@@ -1,6 +1,6 @@
 import cv2
 
-id_tabuleiro = 3
+id_tabuleiro = 6
 dicionario_desejado = "DICT_6X6_1000"
 
 ARUCO_DICT = {
@@ -23,7 +23,7 @@ ARUCO_DICT = {
 }
 
 # Parâmetros do tabuleiro de Charuco
-squares_x = 11  # Número de quadrados na direção x
+squares_x = 12  # Número de quadrados na direção x
 squares_y = 9  # Número de quadrados na direção y
 square_length = 0.04  # Comprimento dos quadrados em metros
 marker_length = 0.02  # Comprimento das marcas Aruco em metros
@@ -35,8 +35,8 @@ aruco_dict = cv2.aruco.getPredefinedDictionary(ARUCO_DICT[dicionario_desejado])
 # Criar o tabuleiro de Charuco usando a classe CharucoBoard diretamente
 charuco_board = cv2.aruco.CharucoBoard((squares_x, squares_y), square_length, marker_length, aruco_dict)
 
-# Tamanho da imagem do tabuleiro em pixels
-img_width = 900; img_height = 700
+# Tamanho da imagem do tabuleiro em pixels (Tamanho padrão para uma folha A4)
+img_width = 3508; img_height = 2480
 
 # Gerando de fato a imagem do tabuleiro para a calibração
 img = cv2.aruco.CharucoBoard.generateImage(charuco_board, (img_width, img_height), marginSize=MARGIN_PX)
