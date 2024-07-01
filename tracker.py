@@ -1,11 +1,12 @@
 import cv2
-import numpy as np
+import sys
+sys.path.append("./Classes")
 from Classes.CameraData import CameraData
-import Methods.Drawer as Drawer
-import Methods.Manipulate_Files as Manip
-import Methods.Calculator as Calculator
-import Methods.Graphics as Plot
-import Methods.Calibration as Calibration
+from Drawer import Drawer
+from Manipulate_Files import Manipulate_Files as Manip
+from Calculator import Calculator
+from Graphics import Graphics as Plot
+from Calibration import Calibration
 
 # Garante que as pastas necessárias existem
 Manip.create_folders()
@@ -18,13 +19,16 @@ Manip.clean_tracker_processing()
 nome_video = 'Voo9Editado'; extencao = '.mp4'
 
 # Caminho para importar os dados da câmera utilizada
-dados_camera = CameraData('./Cameras_Data/celular_Gleydson2/coeficientes_Zoom_1x.npz')
+dados_camera = CameraData('./Cameras_Data/celular_Gleydson2/testeCharuco.npz')
 
 # SETAR O VALOR DO FATOR DE CONVERSÃO
 fatConvPxM = 3/660
 
 # Se desejar aplicar a calibração de câmera, True, se não, False
 aplicaCalib = True
+
+# Define se os coeficientes foram obtidos pela calibração usando tabuleiro de xadrez ou ChArUco 
+ChArUco = True
 
 #--------------------------------------------------------------------------
 
@@ -65,7 +69,7 @@ while True:
     
     # Caso se deseje aplicar a calibração
     if aplicaCalib:
-        frame = Calibration.aply_calib(frame, dados_camera)
+        frame = Calibration.aply_calib(frame, dados_camera, ChArUco)
         Manip.save_data(frame, './frames/frameCALIB_'+str(contFrame)+'.png')
     
     # Se há uma região de interesse para o rastreador rastrear
@@ -129,14 +133,14 @@ while True:
 video.release();cv2.destroyAllWindows() 
 
 # Títulos
-with open("./Methods/Textual_Inputs/graphics_titles.txt", 'r') as arquivo:
+with open("./Textual_Inputs_Tracker_Processing/graphics_titles.txt", 'r') as arquivo:
     titles = arquivo.readlines()
     titles = [title.replace("\n", "") for title in titles]
     arquivo.close()
 
 # Dados
 caminhos_dados_eixo_x = caminho_pasta_output+"tempo_decorrido.txt"
-with open("./Methods/Textual_Inputs/paths_data_to_plot_graphics.txt", 'r') as arquivo:
+with open("./Textual_Inputs_Tracker_Processing/paths_data_to_plot_graphics.txt", 'r') as arquivo:
     caminhos_dados_eixo_y = arquivo.readlines()
     caminhos_dados_eixo_y = [caminho_pasta_output+(caminho.split(" ")[0].replace("\n", "")) for caminho in caminhos_dados_eixo_y]
     arquivo.close()
