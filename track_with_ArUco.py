@@ -62,11 +62,22 @@ caminho_pasta_output = Manip.create_folder(caminho_pasta_output)
 # Cria os parâmetros para o ArUco
 arucoParams = ArUco_Things.generate_detector_params(caminho_pasta_output)
 
+# Coletando altura e largura do vídeo para garantir que o vídeo de saída tenha a resolução certa
+ok, frame = cv2.VideoCapture('./videos/Voos/'+nome_video+extencao).read()
+if aplicaCalib:
+    frame = Calibration.aply_calib(frame, dados_camera, ChArUco)
+cv2.VideoCapture('./videos/Voos/'+nome_video+extencao).release()
+alturaVideo, larguraVideo = frame.shape[:2]
+
 video = cv2.VideoCapture('./videos/Voos/'+nome_video+extencao)
-alturaVideo = int(video.get(cv2.CAP_PROP_FRAME_HEIGHT)); 
-larguraVideo = int(video.get(cv2.CAP_PROP_FRAME_WIDTH))
+
 fps = video.get(cv2.CAP_PROP_FPS)
-videoSaida = cv2.VideoWriter(caminho_pasta_output+nome_video+'_Output'+extencao, cv2.VideoWriter_fourcc('m', 'p', '4', 'v'), fps, (larguraVideo, alturaVideo))
+videoSaida = cv2.VideoWriter(
+    caminho_pasta_output+nome_video+'_Output'+extencao, 
+    cv2.VideoWriter_fourcc('m', 'p', '4', 'v'), 
+    fps, 
+    (larguraVideo, alturaVideo)
+)
  
 contFrame = 0    
 inicializei_dicionarios = False                      

@@ -94,22 +94,29 @@ class Manipulate_Files:
         caminho_arquivos_pickle = path_to_folder+"Arquivos_Pickle"
         caminho_arquivos_excel = path_to_folder+"Excel_Saga"
         caminho_arquivos_graficos = path_to_folder+"Graficos"
+        caminho_arquivos_txt = path_to_folder+"Textos"
         
         arquivo_pickle = glob.glob(path_to_folder+"*.pkl")
-        arquivo_excel = glob.glob(path_to_folder+"*.xlsx")
+        arquivos_excel = glob.glob(path_to_folder+"*.xlsx")
         graficos = glob.glob(path_to_folder+"*.png")
+        arquivos_txt = glob.glob(path_to_folder+"*.txt")
         
-        if not os.path.exists(caminho_arquivos_pickle):
+        if not os.path.exists(caminho_arquivos_pickle) and len(arquivo_pickle)>0:
             os.mkdir(caminho_arquivos_pickle)
-        if not os.path.exists(caminho_arquivos_excel):
-            os.mkdir(caminho_arquivos_excel)
-        if not os.path.exists(caminho_arquivos_graficos):
-            os.mkdir(caminho_arquivos_graficos) 
-
-        [shutil.move(local_atual, caminho_arquivos_pickle) for local_atual in arquivo_pickle]
-        [shutil.move(local_atual, caminho_arquivos_excel) for local_atual in arquivo_excel]
-        [shutil.move(local_atual, caminho_arquivos_graficos) for local_atual in graficos]
+            [shutil.move(local_atual, caminho_arquivos_pickle) for local_atual in arquivo_pickle]
         
+        if not os.path.exists(caminho_arquivos_excel) and len(arquivos_excel)>0:
+            os.mkdir(caminho_arquivos_excel)
+            [shutil.move(local_atual, caminho_arquivos_excel) for local_atual in arquivos_excel]
+        
+        if not os.path.exists(caminho_arquivos_graficos) and len(graficos)>0:
+            os.mkdir(caminho_arquivos_graficos)
+            [shutil.move(local_atual, caminho_arquivos_graficos) for local_atual in graficos]
+        
+        if not os.path.exists(caminho_arquivos_txt) and len(arquivos_txt)>0:
+            os.mkdir(caminho_arquivos_txt) 
+            [shutil.move(local_atual, caminho_arquivos_txt) for local_atual in arquivos_txt]
+
         print("\nSaturday Night is a Good Night for Fighting\n")
 
     
