@@ -2,9 +2,8 @@ import cv2
 import numpy as np
 import os
 import sys
-
-sys.path.append('./Methods')
-import ArUco_Things
+sys.path.append('./Classes')
+from ArUco_Things import ArUco_Things
 
 # -------------------AJUSTAR----------------------------------
 
@@ -15,9 +14,11 @@ marker_length = 0.01125  # Comprimento das marcas Aruco em metros
 MARGIN_PX = 20    # Tamanho da Margem do Marcador em pixel
 
 dicionario_desejado = "DICT_6X6_1000"
-pathCoeficients = "./Cameras_Data/celular_Gleydson2/testeCharuco.npz"
+pathCoeficients = "./Cameras_Data/celular_Gleydson2/Exemplo.npz"
 
 # -----------------------------------------------------------
+
+cont = 0
 
 PATH_TO_SAMPLES = './Calibration/Samples/'
 ARUCO_DICT = {
@@ -64,6 +65,9 @@ for image_file in image_files:
         # If at least one marker is detected
         imagem = cv2.aruco.drawDetectedMarkers(image_copy, marker_corners, marker_ids)
         cv2.imshow("Calibrando", imagem)
+        cv2.imwrite("./Calibration/Res_Calib/img"+str(cont)+".png", imagem)
+        cont+=1
+        
         k = cv2.waitKey(1) 
         if k == ord('q'):
             break

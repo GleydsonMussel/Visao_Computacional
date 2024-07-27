@@ -45,14 +45,14 @@ ARUCO_DICT = {
 }
 
 # ID do marcador a ser gerado
-marker_id = 14
+marker_id = 34
 # Tamanho do marcador em pixel
 marker_size = 200
 # Dicionário a ser utilizado
 dict_to_use = "DICT_7X7_50"
 
 # Gera o marcador ArUco
-marker = generate_aruco_marker(marker_id, ARUCO_DICT[dict_to_use], marker_size)
+marker = generate_aruco_marker(ARUCO_DICT[dict_to_use], marker_id, marker_size)
 
 # Salva o marcador como uma imagem
 if marker is not None:

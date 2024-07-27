@@ -10,4 +10,5 @@ rois/*
 meuambiente/*
 Classes/__pycache__/*
 Methods/__pycache__/*
-dados_extraidos/
+dados_extraidos/*
+frames_video_processado/*

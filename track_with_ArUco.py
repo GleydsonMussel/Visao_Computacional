@@ -18,7 +18,7 @@ Manip.clean_tracker_processing()
 #-----------------------------PREENCHER-----------------------------------
 
 # SETAR NOME VÍDEO
-nome_video = 'Voo9Editado'; extencao = '.mp4'
+nome_video = 'Voo10Editado'; extencao = '.mp4'
 
 # Dicionário ArUco utilizado (apenas para referencia do dicionário utilizado)
 arucoDict = cv2.aruco.getPredefinedDictionary(cv2.aruco.DICT_7X7_50)
@@ -26,6 +26,8 @@ arucoDict = cv2.aruco.getPredefinedDictionary(cv2.aruco.DICT_7X7_50)
 # Fator de COnversão de pixel para m
 fatConvPxToM = 3/660 # Xadrez voo 9
 fatConvPxToM = 3/596 # ChArUco voo 9
+fatConvPxToM = 4.2/826 # ChArUco voo 10
+#fatConvPxToM = 4.2/873 # ChArUco Decolagem_FInal_Countdown
 
 # Tamanho do marcador em metros 
 marker_size = 0.119 # (Id 37 impresso)
@@ -68,6 +70,7 @@ if aplicaCalib:
     frame = Calibration.aply_calib(frame, dados_camera, ChArUco)
 cv2.VideoCapture('./videos/Voos/'+nome_video+extencao).release()
 alturaVideo, larguraVideo = frame.shape[:2]
+cv2.imwrite("./frames/Frame_Ref.png", frame)
 
 video = cv2.VideoCapture('./videos/Voos/'+nome_video+extencao)
 

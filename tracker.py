@@ -16,13 +16,14 @@ Manip.clean_tracker_processing()
 #-----------------------------PREENCHER-----------------------------------
 
 # SETAR NOME VÍDEO
-nome_video = 'Voo9Editado'; extencao = '.mp4'
+nome_video = 'Voo10Editado'; extencao = '.mp4'
 
 # Caminho para importar os dados da câmera utilizada
 dados_camera = CameraData('./Cameras_Data/celular_Gleydson2/testeCharuco.npz')
 
 # SETAR O VALOR DO FATOR DE CONVERSÃO
-fatConvPxM = 3/660
+fatConvPxM = 4.2/873
+fatConvPxM = 4.2/826 # ChArUco voo 10
 
 # Se desejar aplicar a calibração de câmera, True, se não, False
 aplicaCalib = True
@@ -49,11 +50,24 @@ trackers = {
 tracker_key = 'csrt'
 tracker = trackers[tracker_key]
 
+# Coletando altura e largura do vídeo para garantir que o vídeo de saída tenha a resolução certa
+ok, frame = cv2.VideoCapture('./videos/Voos/'+nome_video+extencao).read()
+if aplicaCalib:
+    frame = Calibration.aply_calib(frame, dados_camera, ChArUco)
+cv2.VideoCapture('./videos/Voos/'+nome_video+extencao).release()
+alturaVideo, larguraVideo = frame.shape[:2]
+cv2.imwrite("./frames/Frame_Ref.png", frame)
+
 video = cv2.VideoCapture('./videos/Voos/'+nome_video+extencao)
-alturaVideo = int(video.get(cv2.CAP_PROP_FRAME_HEIGHT)); 
-larguraVideo = int(video.get(cv2.CAP_PROP_FRAME_WIDTH))
-videoSaida = cv2.VideoWriter(caminho_pasta_output+nome_video+'_output'+extencao, cv2.VideoWriter_fourcc('m', 'p', '4', 'v'), video.get(cv2.CAP_PROP_FPS), (larguraVideo, alturaVideo))
- 
+
+fps = video.get(cv2.CAP_PROP_FPS)
+videoSaida = cv2.VideoWriter(
+    caminho_pasta_output+nome_video+'_Output'+extencao, 
+    cv2.VideoWriter_fourcc('m', 'p', '4', 'v'), 
+    fps, 
+    (larguraVideo, alturaVideo)
+)
+
 distancia_acumulada_X = 0; altura_acumulada = 0
 contFrame = 0
 roi = None                              
@@ -65,12 +79,12 @@ while True:
     
     if frame is None:
         break
-    Manip.save_data(frame, './frames/frameCRU_'+str(contFrame)+'.png')
+    cv2.imwrite('./frames/frameCRU_'+str(contFrame)+'.png', frame)
     
     # Caso se deseje aplicar a calibração
     if aplicaCalib:
         frame = Calibration.aply_calib(frame, dados_camera, ChArUco)
-        Manip.save_data(frame, './frames/frameCALIB_'+str(contFrame)+'.png')
+        cv2.imwrite('./frames/frameCALIB_'+str(contFrame)+'.png', frame)
     
     # Se há uma região de interesse para o rastreador rastrear
     if roi is not None:
